@@ -1,5 +1,8 @@
 import * as Blockly from 'blockly';
 
+// https://blocklycodelabs.dev/codelabs/custom-generator/index.html#0
+//
+
 export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
   "type": "object",
   "message0": "{ %1 %2 }",

@@ -1,3 +1,6 @@
+// https://blocklycodelabs.dev/codelabs/custom-generator/index.html#0
+//
+
 import * as Blockly from 'blockly';
 import {Order} from 'blockly/javascript';
 
