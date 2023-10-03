@@ -83,27 +83,22 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
       "type": "input_dummy"
     },
     {
-      "type": "input_value",
-      "name": "FROM",
-      "message0": "%1",
-      "args0": [
-        {
-          "type": "field_number",
-          "name": "NUM",
-          "value": 1,
-        }
-      ],
+      'type': 'input_value',
+      'name': 'FROM',
+      'check': 'Number',
+      'align': 'RIGHT',
     },
     {
-      "type": "input_value",
-      "name": "TO",
-      "check": "Number",
-      "align": "CENTRE"
+      'type': 'input_value',
+      'name': 'TO',
+      'check': 'Number',
+      'align': 'RIGHT',
     },
     {
-      "type": "input_value",
-      "name": "BY",
-      "check": "Number"
+      'type': 'input_value',
+      'name': 'BY',
+      'check': 'Number',
+      'align': 'RIGHT',
     },
     {
       "type": "input_statement",

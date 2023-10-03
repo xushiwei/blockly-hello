@@ -56,6 +56,32 @@ export const toolbox = {
         {
           'kind': 'block',
           'type': 'goplus_for_count',
+          'inputs': {
+            'FROM': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+            'TO': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 10,
+                },
+              },
+            },
+            'BY': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 1,
+                },
+              },
+            },
+          },
         },
         {
           'kind': 'block',
