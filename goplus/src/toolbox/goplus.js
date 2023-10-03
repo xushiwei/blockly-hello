@@ -760,6 +760,14 @@ export const toolbox = {
           'kind': 'block',
           'type': 'goplus_var_assign',
         },
+        {
+          'kind': 'block',
+          'type': 'goplus_var_assign_op',
+        },
+        {
+          'kind': 'block',
+          'type': 'goplus_var',
+        },
       ]
     },
     {
@@ -789,6 +797,40 @@ export const toolbox = {
         {
           'kind': 'block',
           'type': 'goplus_call_expr',
+        },
+        {
+          'kind': 'block',
+          'type': 'goplus_lambda_expr',
+        },
+        {
+          'kind': 'block',
+          'type': 'goplus_lambda',
+        },
+        {
+          'kind': 'block',
+          'type': 'goplus_closure',
+        },
+        {
+          'kind': 'block',
+          'type': 'goplus_expr',
+          'inputs': {
+            'CODE': {
+              'shadow': {
+                'type': 'logic_null',
+              },
+            }
+          },
+        },
+        {
+          'kind': 'block',
+          'type': 'goplus_stmt',
+          'inputs': {
+            'CODE': {
+              'shadow': {
+                'type': 'logic_null',
+              },
+            }
+          },
         },
       ]
     },
