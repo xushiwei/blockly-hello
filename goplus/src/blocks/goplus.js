@@ -38,6 +38,8 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
       "name": "BODY"
     }
   ],
+  "previousStatement": null,
+  "nextStatement": null,
   "style":"loop_blocks",
 },
 {
