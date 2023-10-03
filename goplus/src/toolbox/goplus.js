@@ -48,6 +48,16 @@ export const toolbox = {
         {
           'kind': 'block',
           'type': 'goplus_for_cond',
+          'inputs': {
+            'COND': {
+              'shadow': {
+                'type': 'logic_boolean',
+                'fields': {
+                  'BOOL': true,
+                },
+              },
+            }
+          },
         },
         {
           'kind': 'block',
