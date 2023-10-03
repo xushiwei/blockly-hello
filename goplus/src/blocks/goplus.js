@@ -49,7 +49,7 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
     {
       "type": "field_input",
       "name": "VAR",
-      "text": "i"
+      "text": "v"
     },
     {
       "type": "input_value",
