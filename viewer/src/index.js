@@ -16,6 +16,7 @@ const ws = Blockly.inject(blocklyDiv, {
   toolbox: toolbox,
   theme: Theme,
   toolboxPosition: 'end',
+  sounds: false,
 });
 
 // Hide toolbox
