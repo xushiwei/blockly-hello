@@ -5,6 +5,7 @@
  */
 
 import * as Blockly from 'blockly';
+// https://google.github.io/blockly-samples/plugins/theme-deuteranopia/test/index
 import Theme from '@blockly/theme-deuteranopia';
 import {blocks} from './blocks/json';
 import {jsonGenerator} from './generators/json';
