@@ -14,11 +14,15 @@ Blockly.common.defineBlocks(blocks);
 const blocklyDiv = document.getElementById('blocklyDiv');
 const ws = Blockly.inject(blocklyDiv, {
   toolbox: toolbox,
-  theme: Theme
+  theme: Theme,
+  toolboxPosition: 'end',
 });
 
 // Hide toolbox
-document.getElementsByClassName('blocklyToolboxDiv').item(0).setAttribute('style', 'display: none');
+document.getElementsByClassName('blocklyToolboxDiv').item(0).remove();
+document.getElementsByClassName('blocklyDropDownDiv').item(0).remove();
+
+//getElementsByClassName('blocklyToolboxDiv').item(0).setAttribute('style', 'display: none');
 
 // Load the initial state
 load(ws, data);
