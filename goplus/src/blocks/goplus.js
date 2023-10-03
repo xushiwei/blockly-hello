@@ -188,4 +188,71 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
   "inputsInline": true,
   "previousStatement": null,
   "style": "procedure_blocks",
+},
+{
+  "type": "goplus_call_expr",
+  "message0": "%1 ( %2 %3 ... ) %4",
+  "args0": [
+    {
+      "type": "field_dropdown",
+      "name": "NAME",
+      "options": [
+        [
+          "fn",
+          "NAME1"
+        ],
+        [
+          "...",
+          "NAME2"
+        ]
+      ]
+    },
+    {
+      "type": "input_dummy"
+    },
+    {
+      "type": "input_value",
+      "name": "EXPR0"
+    },
+    {
+      "type": "input_end_row"
+    }
+  ],
+  "inputsInline": true,
+  "output": null,
+  "style": "procedure_blocks",
+},
+{
+  "type": "goplus_call",
+  "message0": "%1 %2 %3 , ... %4",
+  "args0": [
+    {
+      "type": "field_dropdown",
+      "name": "NAME",
+      "options": [
+        [
+          "fn",
+          "NAME1"
+        ],
+        [
+          "...",
+          "NAME2"
+        ]
+      ]
+    },
+    {
+      "type": "input_dummy"
+    },
+    {
+      "type": "input_value",
+      "name": "EXPR0"
+    },
+    {
+      "type": "input_end_row"
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "style": "procedure_blocks",
 }]);

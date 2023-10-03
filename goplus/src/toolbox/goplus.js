@@ -762,6 +762,14 @@ export const toolbox = {
             }
           },
         },
+        {
+          'kind': 'block',
+          'type': 'goplus_call',
+        },
+        {
+          'kind': 'block',
+          'type': 'goplus_call_expr',
+        },
       ]
     },
   ],
