@@ -5,6 +5,7 @@
  */
 
 import * as Blockly from 'blockly';
+import Theme from '@blockly/theme-deuteranopia';
 import {blocks} from './blocks/json';
 import {jsonGenerator} from './generators/json';
 import {save, load} from './serialization';
@@ -17,7 +18,10 @@ Blockly.common.defineBlocks(blocks);
 // Set up UI elements and inject Blockly
 const codeDiv = document.getElementById('generatedCode').firstChild;
 const blocklyDiv = document.getElementById('blocklyDiv');
-const ws = Blockly.inject(blocklyDiv, {toolbox});
+const ws = Blockly.inject(blocklyDiv, {
+  toolbox: toolbox,
+  theme: Theme
+});
 
 // This function resets the code and output divs, shows the
 // generated code from the workspace, and evals the code.
