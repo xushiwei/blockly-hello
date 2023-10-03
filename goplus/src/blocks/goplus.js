@@ -42,7 +42,7 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
 },
 {
   "type": "goplus_for_each",
-  "message0": "for %1 <- %2 %3",
+  "message0": "for %1 <- %2 if %3 %4",
   "args0": [
     {
       "type": "field_input",
@@ -55,11 +55,17 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
       "align": "LEFT"
     },
     {
+      "type": "input_value",
+      "name": "COND",
+      "check": "Boolean",
+      "align": "RIGHT"
+    },
+    {
       "type": "input_statement",
       "name": "BODY"
     }
   ],
-  "inputsInline": false,
+  "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
   "style":"loop_blocks",
