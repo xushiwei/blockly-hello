@@ -155,7 +155,7 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
           "R1"
         ],
         [
-          "<noreturn>",
+          "",
           ""
         ],
         [
@@ -191,7 +191,7 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
 },
 {
   "type": "goplus_call_expr",
-  "message0": "%1 ( %2 %3 ... ) %4",
+  "message0": "%1 ( %2 %3 , ... ) %4",
   "args0": [
     {
       "type": "field_dropdown",
@@ -255,4 +255,81 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
   "previousStatement": null,
   "nextStatement": null,
   "style": "procedure_blocks",
+},
+{
+  "type": "goplus_var_define",
+  "message0": "%1 := %2",
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "NAME0",
+      "text": "x"
+    },
+    {
+      "type": "input_value",
+      "name": "EXPR0"
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "style": "variable_blocks",
+},
+{
+  "type": "goplus_var_decl",
+  "message0": "var %1 %2 = %3 %4",
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "NAME0",
+      "text": "x"
+    },
+    {
+      "type": "field_dropdown",
+      "name": "TYPE0",
+      "options": [
+        [
+          "T",
+          "T"
+        ],
+        [
+          "",
+          ""
+        ],
+        [
+          "...",
+          "T2"
+        ]
+      ]
+    },
+    {
+      "type": "input_dummy"
+    },
+    {
+      "type": "input_value",
+      "name": "EXPR0"
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "style": "variable_blocks",
+},
+{
+  "type": "goplus_var_assign",
+  "message0": "%1 = %2",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "VAR0"
+    },
+    {
+      "type": "input_value",
+      "name": "EXPR0"
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "style": "variable_blocks",
 }]);

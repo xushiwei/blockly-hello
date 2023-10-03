@@ -740,7 +740,27 @@ export const toolbox = {
       'kind': 'category',
       'name': 'Variables',
       'categorystyle': 'variable_category',
-      'custom': 'VARIABLE',
+      'contents': [
+        {
+          'kind': 'block',
+          'type': 'goplus_var_decl',
+          'inputs': {
+            'EXPR0': {
+              'shadow': {
+                'type': 'logic_null',
+              },
+            }
+          },
+        },
+        {
+          'kind': 'block',
+          'type': 'goplus_var_define',
+        },
+        {
+          'kind': 'block',
+          'type': 'goplus_var_assign',
+        },
+      ]
     },
     {
       'kind': 'category',
