@@ -18,7 +18,7 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
       "name": "BODY"
     }
   ],
-  "inputsInline": false,
+  "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
   "style":"logic_blocks",
@@ -38,6 +38,7 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
       "name": "BODY"
     }
   ],
+  "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
   "style":"loop_blocks",
