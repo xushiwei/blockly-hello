@@ -114,25 +114,63 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
   "style":"loop_blocks",
 },
 {
-  "type": "member",
-  "message0": "%1 %2 %3",
+  "type": "goplus_func",
+  "message0": "func %1 ( %2 %3 , %4 ) %5 %6 %7",
   "args0": [
     {
       "type": "field_input",
-      "name": "MEMBER_NAME",
+      "name": "NAME",
       "text": ""
     },
     {
-      "type": "field_label",
-      "name": "COLON",
-      "text": ":"
+      "type": "field_input",
+      "name": "ARG0",
+      "text": "x"
     },
     {
-      "type": "input_value",
-      "name": "MEMBER_VALUE"
+      "type": "field_dropdown",
+      "name": "ARG0_TYPE",
+      "options": [
+        [
+          "T",
+          "T1"
+        ],
+        [
+          "...",
+          "T2"
+        ]
+      ]
+    },
+    {
+      "type": "field_label_serializable",
+      "name": "VARIADIC",
+      "text": "..."
+    },
+    {
+      "type": "field_dropdown",
+      "name": "RET0_TYPE",
+      "options": [
+        [
+          "RET",
+          "R1"
+        ],
+        [
+          "...",
+          "R2"
+        ]
+      ]
+    },
+    {
+      "type": "input_dummy"
+    },
+    {
+      "type": "input_statement",
+      "name": "BODY"
     }
   ],
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 230,
+  "style": "procedure_blocks",
+  "tooltip": "",
+  "helpUrl": ""
 }]);

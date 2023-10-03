@@ -746,7 +746,12 @@ export const toolbox = {
       'kind': 'category',
       'name': 'Functions',
       'categorystyle': 'procedure_category',
-      'custom': 'PROCEDURE',
+      'contents': [
+        {
+          'kind': 'block',
+          'type': 'goplus_func',
+        },
+      ]
     },
   ],
 };
