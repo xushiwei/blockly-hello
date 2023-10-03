@@ -46,7 +46,7 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
   "args0": [
     {
       "type": "field_input",
-      "name": "NAME",
+      "name": "VAR",
       "text": "i"
     },
     {
@@ -72,11 +72,11 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
 },
 {
   "type": "goplus_for_count",
-  "message0": "for %1 %2 <- %3 : %4 : %5 %6 %7",
+  "message0": "for %1 %2 <- %3 : %4 : %5 %6",
   "args0": [
     {
       "type": "field_input",
-      "name": "NAME",
+      "name": "VAR",
       "text": "i"
     },
     {
@@ -85,8 +85,14 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
     {
       "type": "input_value",
       "name": "FROM",
-      "check": "Number",
-      "align": "LEFT"
+      "message0": "%1",
+      "args0": [
+        {
+          "type": "field_number",
+          "name": "NUM",
+          "value": 1,
+        }
+      ],
     },
     {
       "type": "input_value",
@@ -98,9 +104,6 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
       "type": "input_value",
       "name": "BY",
       "check": "Number"
-    },
-    {
-      "type": "input_end_row"
     },
     {
       "type": "input_statement",
