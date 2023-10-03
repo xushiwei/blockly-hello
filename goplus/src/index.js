@@ -8,16 +8,19 @@ import * as Blockly from 'blockly';
 // https://google.github.io/blockly-samples/plugins/theme-deuteranopia/test/index
 import Theme from '@blockly/theme-deuteranopia';
 import {blocks} from './blocks/goplus';
-import {goplusGenerator} from './generators/goplus';
+import {forBlock} from './generators/javascript';
+import {javascriptGenerator} from 'blockly/javascript';
 import {save, load} from './serialization';
-import {toolbox} from './toolbox';
+import {toolbox} from './toolbox/goplus';
 import './index.css';
 
 // Register the blocks and generator with Blockly
 Blockly.common.defineBlocks(blocks);
+Object.assign(javascriptGenerator.forBlock, forBlock);
 
 // Set up UI elements and inject Blockly
 const codeDiv = document.getElementById('generatedCode').firstChild;
+const outputDiv = document.getElementById('output');
 const blocklyDiv = document.getElementById('blocklyDiv');
 const ws = Blockly.inject(blocklyDiv, {
   toolbox: toolbox,
@@ -28,8 +31,12 @@ const ws = Blockly.inject(blocklyDiv, {
 // generated code from the workspace, and evals the code.
 // In a real application, you probably shouldn't use `eval`.
 const runCode = () => {
-  const code = goplusGenerator.workspaceToCode(ws);
+  const code = javascriptGenerator.workspaceToCode(ws);
   codeDiv.innerText = code;
+
+  outputDiv.innerHTML = '';
+
+  eval(code);
 };
 
 // Load the initial state from storage and run the code.

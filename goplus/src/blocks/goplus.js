@@ -4,19 +4,107 @@ import * as Blockly from 'blockly';
 //
 
 export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
-  "type": "object",
-  "message0": "{ %1 %2 }",
+  "type": "goplus_if",
+  "message0": "if %1 %2",
   "args0": [
+    {
+      "type": "input_value",
+      "name": "COND",
+      "check": "Boolean",
+      "align": "RIGHT"
+    },
+    {
+      "type": "input_statement",
+      "name": "BODY"
+    }
+  ],
+  "inputsInline": false,
+  "previousStatement": null,
+  "nextStatement": null,
+  "style":"logic_blocks",
+},
+{
+  "type": "goplus_for_cond",
+  "message0": "for %1 %2",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "COND",
+      "check": "Boolean",
+      "align": "RIGHT"
+    },
+    {
+      "type": "input_statement",
+      "name": "BODY"
+    }
+  ],
+  "style":"loop_blocks",
+},
+{
+  "type": "goplus_for_each",
+  "message0": "for %1 <- %2 %3",
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "NAME",
+      "text": "i"
+    },
+    {
+      "type": "input_value",
+      "name": "LIST",
+      "align": "LEFT"
+    },
+    {
+      "type": "input_statement",
+      "name": "BODY"
+    }
+  ],
+  "inputsInline": false,
+  "previousStatement": null,
+  "nextStatement": null,
+  "style":"loop_blocks",
+},
+{
+  "type": "goplus_for_count",
+  "message0": "for %1 %2 <- %3 : %4 : %5 %6 %7",
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "NAME",
+      "text": "i"
+    },
     {
       "type": "input_dummy"
     },
     {
+      "type": "input_value",
+      "name": "FROM",
+      "check": "Number",
+      "align": "LEFT"
+    },
+    {
+      "type": "input_value",
+      "name": "TO",
+      "check": "Number",
+      "align": "CENTRE"
+    },
+    {
+      "type": "input_value",
+      "name": "BY",
+      "check": "Number"
+    },
+    {
+      "type": "input_end_row"
+    },
+    {
       "type": "input_statement",
-      "name": "MEMBERS"
+      "name": "BODY"
     }
   ],
-  "output": null,
-  "colour": 230,
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "style":"loop_blocks",
 },
 {
   "type": "member",
