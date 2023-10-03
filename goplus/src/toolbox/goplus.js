@@ -751,6 +751,17 @@ export const toolbox = {
           'kind': 'block',
           'type': 'goplus_func',
         },
+        {
+          'kind': 'block',
+          'type': 'goplus_return',
+          'inputs': {
+            'RET0': {
+              'shadow': {
+                'type': 'logic_null',
+              },
+            }
+          },
+        },
       ]
     },
   ],

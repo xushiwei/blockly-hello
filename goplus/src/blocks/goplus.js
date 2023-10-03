@@ -155,6 +155,10 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
           "R1"
         ],
         [
+          "<noreturn>",
+          ""
+        ],
+        [
           "...",
           "R2"
         ]
@@ -171,6 +175,17 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([{
   "previousStatement": null,
   "nextStatement": null,
   "style": "procedure_blocks",
-  "tooltip": "",
-  "helpUrl": ""
+},
+{
+  "type": "goplus_return",
+  "message0": "return %1",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "RET0"
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "style": "procedure_blocks",
 }]);
