@@ -8,7 +8,7 @@ import forEach from './goplus/for-each';
 
 export const blocksFromJS = {
   'goplus_for_range': forRange,
-  'goplus_for_each': forEach
+  'goplus_for_each_2': forEach
 }
 
 export const blocksFromJSON = Blockly.common.createBlockDefinitionsFromJsonArray([{
@@ -35,6 +35,36 @@ export const blocksFromJSON = Blockly.common.createBlockDefinitionsFromJsonArray
   "type": "goplus_for_cond",
   "message0": "for %1 %2",
   "args0": [
+    {
+      "type": "input_value",
+      "name": "COND",
+      "check": "Boolean",
+      "align": "RIGHT"
+    },
+    {
+      "type": "input_statement",
+      "name": "BODY"
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "style":"loop_blocks",
+},
+{
+  "type": "goplus_for_each",
+  "message0": "for %1 <- %2 if %3 %4",
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "VAR",
+      "text": "v"
+    },
+    {
+      "type": "input_value",
+      "name": "LIST",
+      "align": "LEFT"
+    },
     {
       "type": "input_value",
       "name": "COND",
