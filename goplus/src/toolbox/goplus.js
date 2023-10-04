@@ -770,6 +770,10 @@ export const toolbox = {
         },
         {
           'kind': 'block',
+          'type': 'goplus_inc_dec',
+        },
+        {
+          'kind': 'block',
           'type': 'goplus_var',
         },
       ]

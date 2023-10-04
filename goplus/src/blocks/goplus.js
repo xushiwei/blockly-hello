@@ -469,6 +469,34 @@ export const blocksFromJSON = Blockly.common.createBlockDefinitionsFromJsonArray
   "style": "variable_blocks",
 },
 {
+  "type": "goplus_inc_dec",
+  "message0": "%1 %2",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "NAME"
+    },
+    {
+      "type": "field_dropdown",
+      "name": "OP",
+      "options": [
+        [
+          "++",
+          "++"
+        ],
+        [
+          "--",
+          "-="
+        ]
+      ]
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "style": "variable_blocks",
+},
+{
   "type": "goplus_var",
   "message0": "%1",
   "args0": [
