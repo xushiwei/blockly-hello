@@ -57,6 +57,10 @@ export const toolbox = {
       'contents': [
         {
           'kind': 'block',
+          'type': 'goplus_for_range',
+        },
+        {
+          'kind': 'block',
           'type': 'goplus_for_cond',
           'inputs': {
             'COND': {
