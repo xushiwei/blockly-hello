@@ -1,24 +1,29 @@
 import * as Blockly from 'blockly';
-import { plusImage, minusImage } from './helpers';
+import { withStateChange } from './helpers';
 
 const mutator = {
   saveExtraState() {
     return {
-      'hasKey': this.hasKey_,
+      isSelected: this.isSelected_,
     };
   },
   loadExtraState(state) {
-    this.updateWith_(state['hasKey']);
+    this.isSelected_ = state.isSelected;
+    this.renderKeyVaue_();
   },
 }
 
 Blockly.Extensions.registerMutator('goplus-for-each-mutator', mutator);
 
+/**
+ * 作为 Text field 的占位值
+ * 该 field value 为该值时，意味着当前 field 未被设置
+ */
+const textPlaceholder = '';
+
 export default {
 
-  hasKey_: false,
-
-  mutator: 'goplus-for-each-mutator',
+  isSelected_: false,
 
   /**
    * @this Blockly.Block
@@ -30,7 +35,7 @@ export default {
     this.setTooltip('for each in goplus.');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.appendDummyInput('INPUT_VAR');
+    this.appendDummyInput('KV');
     this.appendValueInput('LIST')
         .appendField('<-');
     this.appendValueInput('COND')
@@ -40,68 +45,47 @@ export default {
     this.appendDummyInput()
         .appendField('end');
 
+    this.setStyle('loop_blocks');
     this.setInputsInline(true);
-    this.updateWith_(false);
+    this.renderKeyVaue_();
     Blockly.Extensions.apply('goplus-for-each-mutator', this, true);
   },
 
-  /**
-   * Update shape
-   * @this Blockly.Block
-   * @param {boolean} hasKey 
-   */
-  updateWith_(hasKey) {
+  renderKeyVaue_() {
 
-    this.hasKey_ = hasKey
+    const isSelected = this.isSelected_;
+    const fieldKey = this.getField('KEY');
+    const hasKey = fieldKey != null && fieldKey.getValue() !== textPlaceholder;
 
-    const inputVar = this.getInput('INPUT_VAR')
+    const inputKeyValue = this.getInput('KV');
     if (!this.getField('FOR')) {
-      inputVar?.appendField('for', 'FOR')
+      inputKeyValue?.appendField('for', 'FOR');
     }
 
-    if (hasKey) {
-      if (this.getField('PLUS')) inputVar?.removeField('PLUS')
-      if (!this.getField('MINUS')) inputVar?.insertFieldAt(1, new Blockly.FieldImage(minusImage, 15, 15, undefined, this.onMinusClick_), 'MINUS')
-      if (!this.getField('VAR_KEY')) inputVar?.insertFieldAt(2, new Blockly.FieldVariable('k'), 'VAR_KEY')
-      if (!this.getField('COMMA')) inputVar?.insertFieldAt(3, ',', 'COMMA')
+    if (isSelected || hasKey) {
+      if (this.getField('ETC')) inputKeyValue?.removeField('ETC');
+      if (!this.getField('KEY')) inputKeyValue?.insertFieldAt(1, new Blockly.FieldTextInput(textPlaceholder), 'KEY');
+      if (!this.getField('COMMA')) inputKeyValue?.insertFieldAt(2, ',', 'COMMA');
     } else {
-      if (this.getField('MINUS')) inputVar?.removeField('MINUS')
-      if (this.getField('VAR_KEY')) inputVar?.removeField('VAR_KEY')
-      if (this.getField('COMMA')) inputVar?.removeField('COMMA')
-      if (!this.getField('PLUS')) inputVar?.insertFieldAt(1, new Blockly.FieldImage(plusImage, 15, 15, undefined, this.onPlusClick_), 'PLUS')
+      if (this.getField('KEY')) inputKeyValue?.removeField('KEY');
+      if (this.getField('COMMA')) inputKeyValue?.removeField('COMMA');
+      if (!this.getField('ETC')) inputKeyValue?.insertFieldAt(1, '...', 'ETC');
     }
 
-    if (!this.getField('VAR_VALUE')) inputVar?.appendField(new Blockly.FieldVariable('v'), 'VAR_VALUE')
-    window.t = this
+    if (!this.getField('VALUE')) inputKeyValue?.appendField(new Blockly.FieldTextInput('v'), 'VALUE');
   },
 
-  /**
-   * @param {Blockly.FieldImage} minusField
-   */
-  onMinusClick_(minusField) {
-    const block = minusField.getSourceBlock();
-    if (block.isInFlyout) return;
-
-    Blockly.Events.setGroup(true);
-    const oldExtraState = block.saveExtraState();
-    block.updateWith_(false);
-    const newExtraState = block.saveExtraState();
-    Blockly.Events.fire(new Blockly.Events.BlockChange(block, 'mutation', null, oldExtraState, newExtraState));
-    Blockly.Events.setGroup(false);
+  onSelect_() {
+    withStateChange(this, () => {
+      this.isSelected_ = true;
+      this.renderKeyVaue_();
+    })
   },
 
-  /**
-   * @param {Blockly.FieldImage} minusField
-   */
-  onPlusClick_(minusField) {
-    const block = minusField.getSourceBlock();
-    if (block.isInFlyout) return;
-
-    Blockly.Events.setGroup(true);
-    const oldExtraState = block.saveExtraState();
-    block.updateWith_(true);
-    const newExtraState = block.saveExtraState();
-    Blockly.Events.fire(new Blockly.Events.BlockChange(block, 'mutation', null, oldExtraState, newExtraState));
-    Blockly.Events.setGroup(false);
+  onUnselect_() {
+    withStateChange(this, () => {
+      this.isSelected_ = false;
+      this.renderKeyVaue_();
+    })
   }
 };
