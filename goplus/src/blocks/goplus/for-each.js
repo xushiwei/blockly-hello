@@ -1,24 +1,33 @@
 import * as Blockly from 'blockly';
-import { plusImage, minusImage } from './helpers';
+import { withStateChange } from './helpers';
 
 const mutator = {
   saveExtraState() {
     return {
-      'hasKey': this.hasKey_,
+      isSelected: this.isSelected_,
     };
   },
-  loadExtraState(state) {
-    this.updateWith_(state['hasKey']);
+  async loadExtraState(state) {
+    this.isSelected_ = state.isSelected;
+
+    // 通过 setTimeout 推迟 render，确保 deserialization 已完成（`getFieldValue('KEY')` 能取到正确的值）
+    setTimeout(() => {
+      this.render_();
+    }, 0);
   },
 }
 
 Blockly.Extensions.registerMutator('goplus-for-each-mutator', mutator);
 
+/**
+ * 作为 Text field 的占位值
+ * 该 field value 为该值时，意味着当前 field 未被设置
+ */
+const textPlaceholder = '';
+
 export default {
 
-  hasKey_: false,
-
-  mutator: 'goplus-for-each-mutator',
+  isSelected_: false,
 
   /**
    * @this Blockly.Block
@@ -30,78 +39,72 @@ export default {
     this.setTooltip('for each in goplus.');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.appendDummyInput('INPUT_VAR');
+    this.appendDummyInput('KV')
+        .appendField('for', 'FOR')
+        .appendField('...', 'KV_ETC')
+        .appendField(new Blockly.FieldTextInput(textPlaceholder), 'KEY')
+        .appendField(',', 'COMMA')
+        .appendField(new Blockly.FieldTextInput('v'), 'VALUE');
     this.appendValueInput('LIST')
         .appendField('<-');
     this.appendValueInput('COND')
-        .appendField('if')
+        .appendField('if');
+    this.appendDummyInput('COND_ETC')
+        .appendField('...');
     this.appendStatementInput('DO')
         .appendField('do');
     this.appendDummyInput()
         .appendField('end');
 
+    this.setStyle('loop_blocks');
     this.setInputsInline(true);
-    this.updateWith_(false);
+    this.render_();
     Blockly.Extensions.apply('goplus-for-each-mutator', this, true);
+
+    window.b = this
   },
 
-  /**
-   * Update shape
-   * @this Blockly.Block
-   * @param {boolean} hasKey 
-   */
-  updateWith_(hasKey) {
+  renderKeyVaue_() {
+    const isSelected = this.isSelected_;
+    const valueKey = this.getFieldValue('KEY');
+    const hasKey = valueKey != null && valueKey !== textPlaceholder;
+    const keyVisible = isSelected || hasKey
 
-    this.hasKey_ = hasKey
-
-    const inputVar = this.getInput('INPUT_VAR')
-    if (!this.getField('FOR')) {
-      inputVar?.appendField('for', 'FOR')
-    }
-
-    if (hasKey) {
-      if (this.getField('PLUS')) inputVar?.removeField('PLUS')
-      if (!this.getField('MINUS')) inputVar?.insertFieldAt(1, new Blockly.FieldImage(minusImage, 15, 15, undefined, this.onMinusClick_), 'MINUS')
-      if (!this.getField('VAR_KEY')) inputVar?.insertFieldAt(2, new Blockly.FieldVariable('k'), 'VAR_KEY')
-      if (!this.getField('COMMA')) inputVar?.insertFieldAt(3, ',', 'COMMA')
-    } else {
-      if (this.getField('MINUS')) inputVar?.removeField('MINUS')
-      if (this.getField('VAR_KEY')) inputVar?.removeField('VAR_KEY')
-      if (this.getField('COMMA')) inputVar?.removeField('COMMA')
-      if (!this.getField('PLUS')) inputVar?.insertFieldAt(1, new Blockly.FieldImage(plusImage, 15, 15, undefined, this.onPlusClick_), 'PLUS')
-    }
-
-    if (!this.getField('VAR_VALUE')) inputVar?.appendField(new Blockly.FieldVariable('v'), 'VAR_VALUE')
-    window.t = this
+    this.getField('KV_ETC').setVisible(!keyVisible)
+    this.getField('KEY').setVisible(keyVisible)
+    this.getField('COMMA').setVisible(keyVisible)
   },
 
-  /**
-   * @param {Blockly.FieldImage} minusField
-   */
-  onMinusClick_(minusField) {
-    const block = minusField.getSourceBlock();
-    if (block.isInFlyout) return;
+  renderCond_() {
+    const isSelected = this.isSelected_;
+    const inputCond = this.getInput('COND');
+    const inputCondEtc = this.getInput('COND_ETC');
+    const blockCond = inputCond.connection.targetBlock();
+    const hasCond = blockCond != null && !blockCond.isShadow();
+    const condVisible = isSelected || hasCond
 
-    Blockly.Events.setGroup(true);
-    const oldExtraState = block.saveExtraState();
-    block.updateWith_(false);
-    const newExtraState = block.saveExtraState();
-    Blockly.Events.fire(new Blockly.Events.BlockChange(block, 'mutation', null, oldExtraState, newExtraState));
-    Blockly.Events.setGroup(false);
+    inputCond.setVisible(condVisible);
+    inputCondEtc.setVisible(!condVisible);
   },
 
-  /**
-   * @param {Blockly.FieldImage} minusField
-   */
-  onPlusClick_(minusField) {
-    const block = minusField.getSourceBlock();
-    if (block.isInFlyout) return;
+  render_() {
+    this.renderKeyVaue_();
+    this.renderCond_();
+    // setVisible 后需要让当前 block 重新 render 以计算正确的 size
+    this.queueRender();
+  },
 
-    Blockly.Events.setGroup(true);
-    const oldExtraState = block.saveExtraState();
-    block.updateWith_(true);
-    const newExtraState = block.saveExtraState();
-    Blockly.Events.fire(new Blockly.Events.BlockChange(block, 'mutation', null, oldExtraState, newExtraState));
-    Blockly.Events.setGroup(false);
+  onSelect_() {
+    withStateChange(this, () => {
+      this.isSelected_ = true;
+      this.render_();
+    });
+  },
+
+  onUnselect_() {
+    withStateChange(this, () => {
+      this.isSelected_ = false;
+      this.render_();
+    });
   }
 };
