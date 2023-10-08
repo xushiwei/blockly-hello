@@ -7,9 +7,13 @@ const mutator = {
       isSelected: this.isSelected_,
     };
   },
-  loadExtraState(state) {
+  async loadExtraState(state) {
     this.isSelected_ = state.isSelected;
-    this.renderKeyVaue_();
+
+    // 通过 setTimeout 推迟 render，确保 deserialization 已完成（`getFieldValue('KEY')` 能取到正确的值）
+    setTimeout(() => {
+      this.render_();
+    }, 0);
   },
 }
 
@@ -35,11 +39,18 @@ export default {
     this.setTooltip('for each in goplus.');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.appendDummyInput('KV');
+    this.appendDummyInput('KV')
+        .appendField('for', 'FOR')
+        .appendField('...', 'KV_ETC')
+        .appendField(new Blockly.FieldTextInput(textPlaceholder), 'KEY')
+        .appendField(',', 'COMMA')
+        .appendField(new Blockly.FieldTextInput('v'), 'VALUE');
     this.appendValueInput('LIST')
         .appendField('<-');
     this.appendValueInput('COND')
-        .appendField('if')
+        .appendField('if');
+    this.appendDummyInput('COND_ETC')
+        .appendField('...');
     this.appendStatementInput('DO')
         .appendField('do');
     this.appendDummyInput()
@@ -47,45 +58,53 @@ export default {
 
     this.setStyle('loop_blocks');
     this.setInputsInline(true);
-    this.renderKeyVaue_();
+    this.render_();
     Blockly.Extensions.apply('goplus-for-each-mutator', this, true);
+
+    window.b = this
   },
 
   renderKeyVaue_() {
-
     const isSelected = this.isSelected_;
-    const fieldKey = this.getField('KEY');
-    const hasKey = fieldKey != null && fieldKey.getValue() !== textPlaceholder;
+    const valueKey = this.getFieldValue('KEY');
+    const hasKey = valueKey != null && valueKey !== textPlaceholder;
+    const keyVisible = isSelected || hasKey
 
-    const inputKeyValue = this.getInput('KV');
-    if (!this.getField('FOR')) {
-      inputKeyValue?.appendField('for', 'FOR');
-    }
+    this.getField('KV_ETC').setVisible(!keyVisible)
+    this.getField('KEY').setVisible(keyVisible)
+    this.getField('COMMA').setVisible(keyVisible)
+  },
 
-    if (isSelected || hasKey) {
-      if (this.getField('ETC')) inputKeyValue?.removeField('ETC');
-      if (!this.getField('KEY')) inputKeyValue?.insertFieldAt(1, new Blockly.FieldTextInput(textPlaceholder), 'KEY');
-      if (!this.getField('COMMA')) inputKeyValue?.insertFieldAt(2, ',', 'COMMA');
-    } else {
-      if (this.getField('KEY')) inputKeyValue?.removeField('KEY');
-      if (this.getField('COMMA')) inputKeyValue?.removeField('COMMA');
-      if (!this.getField('ETC')) inputKeyValue?.insertFieldAt(1, '...', 'ETC');
-    }
+  renderCond_() {
+    const isSelected = this.isSelected_;
+    const inputCond = this.getInput('COND');
+    const inputCondEtc = this.getInput('COND_ETC');
+    const blockCond = inputCond.connection.targetBlock();
+    const hasCond = blockCond != null && !blockCond.isShadow();
+    const condVisible = isSelected || hasCond
 
-    if (!this.getField('VALUE')) inputKeyValue?.appendField(new Blockly.FieldTextInput('v'), 'VALUE');
+    inputCond.setVisible(condVisible);
+    inputCondEtc.setVisible(!condVisible);
+  },
+
+  render_() {
+    this.renderKeyVaue_();
+    this.renderCond_();
+    // setVisible 后需要让当前 block 重新 render 以计算正确的 size
+    this.queueRender();
   },
 
   onSelect_() {
     withStateChange(this, () => {
       this.isSelected_ = true;
-      this.renderKeyVaue_();
-    })
+      this.render_();
+    });
   },
 
   onUnselect_() {
     withStateChange(this, () => {
       this.isSelected_ = false;
-      this.renderKeyVaue_();
-    })
+      this.render_();
+    });
   }
 };
