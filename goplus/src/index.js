@@ -14,6 +14,7 @@ import {save, load} from './serialization';
 import {toolbox} from './toolbox/goplus';
 import './index.css';
 import { initBlockSelect } from './plugins/block-select';
+import { initShadowBlockConverter } from './plugins/shadow-block-converter';
 
 // Register the blocks and generator with Blockly
 Blockly.common.defineBlocks(blocksFromJSON);
@@ -68,3 +69,4 @@ ws.addChangeListener((e) => {
 });
 
 initBlockSelect(ws);
+initShadowBlockConverter(ws);
