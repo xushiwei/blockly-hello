@@ -13,7 +13,7 @@ import {javascriptGenerator} from 'blockly/javascript';
 import {save, load} from './serialization';
 import {toolbox} from './toolbox/goplus';
 import './index.css';
-import { initBlockSelect } from './plugins/block-select';
+import { initBlockChange, initBlockFieldChange, initBlockInputConnect, initBlockSelect } from './plugins/block-event';
 import { initShadowBlockConverter } from './plugins/shadow-block-converter';
 
 // Register the blocks and generator with Blockly
@@ -69,4 +69,7 @@ ws.addChangeListener((e) => {
 });
 
 initBlockSelect(ws);
+initBlockInputConnect(ws);
+initBlockFieldChange(ws);
+initBlockChange(ws);
 initShadowBlockConverter(ws);

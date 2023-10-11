@@ -1,99 +1,102 @@
+// @ts-nocheck
+import * as React from 'react';
 import * as Blockly from 'blockly';
-import { withStateChange } from './helpers';
-
-const mutator = {
-  saveExtraState() {
-    return {
-      isSelected: this.isSelected_,
-      elseIfCount: this.elseIfCount_,
-      hasElse: this.hasElse_
-    };
-  },
-  async loadExtraState(state) {
-    this.isSelected_ = state.isSelected;
-    this.elseIfCount_ = state.elseIfCount;
-    this.hasElse_ = state.hasElse;
-
-    // 通过 setTimeout 推迟 render，确保 deserialization 已完成（`getFieldValue('KEY')` 能取到正确的值）
-    setTimeout(() => {
-      this.render_();
-    }, 0);
-  },
-}
-
-Blockly.Extensions.registerMutator('goplus-if-else-mutator', mutator);
-
-/**
- * 作为 Text field 的占位值
- * 该 field value 为该值时，意味着当前 field 未被设置
- */
-const textPlaceholder = '';
+import { withStateMutator, selectableMixin, emptyMixin } from './helpers';
+import renderer from '../../boockly-react/renderer';
 
 export default {
-
-  isSelected_: false,
-
-  elseIfCount_: 0,
-  renderedElseIfCount_: 0,
-
-  hasElse_: false,
-  renderedHasElse_: false,
 
   /**
    * @this Blockly.Block
    */
   init() {
 
+    this.jsonInit({
+      tooltip: 'goplus if else',
+      inputsInline: true,
+      previousStatement: null,
+      nextStatement: null,
+      style: 'logic_blocks',
+    })
+
+    Blockly.Extensions.apply(withStateMutator, this, true);
+    Blockly.Extensions.apply(selectableMixin, this, false);
+    Blockly.Extensions.apply(emptyMixin, this, false);
+
+    this.render_();
+
+    window.b = this
+  },
+
+  getElseIfCount_() {
+    let count = 0;
+    for (let i = 1; ; i++) {
+      if (
+        this.isValueInputEmpty(`ELSE_IF_COND_${i}`)
+        && this.isStatementInputEmpty(`ELSE_IF_BODY_${i}`)
+      ) {
+        break
+      } else {
+        count = i
+      }
+    }
+    return count
+  },
+
+  onChange_() {
+    this.setState_({
+      elseIfCount: this.getElseIfCount_(),
+      hasElse: !this.isStatementInputEmpty('ELSE_BODY'),
+    });
+  },
+
+  render_() {
     // if %1 %2
     // if %1 %2 else %3
     // if %1 %2 else if %3 %4 else %5
 
-    this.setTooltip('for each in goplus.');
-    this.setPreviousStatement(true);
-    this.setNextStatement(true);
-    // this.appendDummyInput('KV')
-    //     .appendField('for', 'FOR')
-    //     .appendField('...', 'KV_ETC')
-    //     .appendField(new Blockly.FieldTextInput(textPlaceholder), 'KEY')
-    //     .appendField(',', 'COMMA')
-    //     .appendField(new Blockly.FieldTextInput('v'), 'VALUE');
-    // this.appendValueInput('LIST')
-    //     .appendField('<-');
-    this.appendValueInput('IF')
-        .appendField('if');
-    this.appendStatementInput('THEN')
-        .appendField('do');
-    // this.appendDummyInput('COND_ETC')
-    //     .appendField('...');
-    // this.appendStatementInput('DO')
-    //     .appendField('do');
-    // this.appendDummyInput()
-    //     .appendField('end');
+    const isSelected = this.state_.isSelected ?? false;
+    const elseIfCount = this.state_.elseIfCount ?? 0;
+    const hasElse = this.state_.hasElse ?? false;
 
-    this.setStyle('logic_blocks');
-    this.setInputsInline(false);
-    // this.render_();
-    Blockly.Extensions.apply('goplus-if-else-mutator', this, true);
+    const visibleElseIfCount = isSelected ? (elseIfCount + 1) : elseIfCount;
+    const elseVisible = hasElse || isSelected
+
+    console.log(this.id, isSelected, elseIfCount, hasElse)
+
+    const elseIfParts = Array.from({ length: visibleElseIfCount }).map((_, i) => (
+      <React.Fragment key={i}>
+        <value-input name={`ELSE_IF_COND_${i+1}`}>
+          <label-field value="else if" />
+        </value-input>
+        <statement-input name={`ELSE_IF_BODY_${i+1}`}>
+          <label-field value="do" />
+        </statement-input>
+      </React.Fragment>
+    ))
+
+    const elsePart = elseVisible && (
+      <>
+        <statement-input name="ELSE_BODY">
+          <label-field value="else" />
+        </statement-input>
+      </>
+    )
+
+    renderer.render(
+      <>
+        <value-input name="COND">
+          <label-field value="if" />
+        </value-input>
+        <statement-input name="BODY">
+          <label-field value="do" />
+        </statement-input>
+        {elseIfParts}
+        {elsePart}
+      </>,
+      this,
+      () => this.queueRender()
+    );
   },
 
-  render_() {
-    // render if-else & else
-
-    // setVisible 后需要让当前 block 重新 render 以计算正确的 size
-    this.queueRender();
-  },
-
-  onSelect_() {
-    withStateChange(this, () => {
-      this.isSelected_ = true;
-      this.render_();
-    });
-  },
-
-  onUnselect_() {
-    withStateChange(this, () => {
-      this.isSelected_ = false;
-      this.render_();
-    });
-  }
 };

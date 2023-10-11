@@ -22,6 +22,10 @@ export const toolbox = {
         },
         {
           'kind': 'block',
+          'type': 'goplus_if_else',
+        },
+        {
+          'kind': 'block',
           'type': 'controls_if',
         },
         {
@@ -100,6 +104,20 @@ export const toolbox = {
               },
             }
           },
+        },
+        {
+          'kind': 'block',
+          'type': 'goplus_for_each_react',
+          // 'inputs': {
+          //   'COND': {
+          //     'shadow': {
+          //       'type': 'logic_boolean',
+          //       'fields': {
+          //         'BOOL': true,
+          //       },
+          //     },
+          //   }
+          // },
         },
         {
           'kind': 'block',
