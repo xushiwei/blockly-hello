@@ -35,8 +35,14 @@ export default {
         this.isValueInputEmpty(`ELSE_IF_COND_${i}`)
         && this.isStatementInputEmpty(`ELSE_IF_BODY_${i}`)
       ) {
+        console.debug(`else..if ${i} empty`)
         break
       } else {
+        console.debug(
+          `else..if ${i} not empty`,
+          this.isValueInputEmpty(`ELSE_IF_COND_${i}`),
+          this.isStatementInputEmpty(`ELSE_IF_BODY_${i}`)
+        )
         count = i
       }
     }
@@ -59,26 +65,36 @@ export default {
     const elseIfCount = this.state_.elseIfCount ?? 0;
     const hasElse = this.state_.hasElse ?? false;
 
-    const visibleElseIfCount = isSelected ? (elseIfCount + 1) : elseIfCount;
-    const elseVisible = hasElse || isSelected
+    // console.log(this.id, isSelected, elseIfCount, hasElse)
 
-    console.log(this.id, isSelected, elseIfCount, hasElse)
-
-    const elseIfParts = Array.from({ length: visibleElseIfCount }).map((_, i) => (
+    const elseIfParts = Array.from({ length: elseIfCount }).map((_, i) => (
       <React.Fragment key={i}>
-        <value-input name={`ELSE_IF_COND_${i+1}`}>
+        <value-input key={`ELSE_IF_COND_${i+1}`} name={`ELSE_IF_COND_${i+1}`}>
           <label-field value="else if" />
         </value-input>
-        <statement-input name={`ELSE_IF_BODY_${i+1}`}>
+        <statement-input key={`ELSE_IF_BODY_${i+1}`} name={`ELSE_IF_BODY_${i+1}`}>
           <label-field value="do" />
         </statement-input>
       </React.Fragment>
     ))
 
-    const elsePart = elseVisible && (
+    if (isSelected) {
+      elseIfParts.push(
+        <React.Fragment key={elseIfCount}>
+          <value-input key={`ELSE_IF_COND_${elseIfCount+1}`} name={`ELSE_IF_COND_${elseIfCount+1}`}>
+            <label-field value="(else if)" />
+          </value-input>
+          <statement-input key={`ELSE_IF_BODY_${elseIfCount+1}`} name={`ELSE_IF_BODY_${elseIfCount+1}`}>
+            <label-field value="(do)" />
+          </statement-input>
+        </React.Fragment>
+      )
+    }
+
+    const elsePart = (hasElse || isSelected) && (
       <>
         <statement-input name="ELSE_BODY">
-          <label-field value="else" />
+          <label-field value={hasElse ? 'else' : '(else)'} />
         </statement-input>
       </>
     )

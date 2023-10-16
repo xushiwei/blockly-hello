@@ -1,4 +1,5 @@
 import * as Blockly from 'blockly';
+import { dragBus } from '../../plugins/block-event';
 
 export const minusImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0Ij48cGF0aCBkPSJNMTggMTFoLTEyYy0xLjEwNCAwLTIgLjg5Ni0yIDJzLjg5NiAyIDIgMmgxMmMxLjEwNCAwIDItLjg5NiAyLTJzLS44OTYtMi0yLTJ6IiBmaWxsPSJ3aGl0ZSIgLz48L3N2Zz4K';
 
@@ -56,12 +57,37 @@ export const selectableMixin = 'selectable-mixin'
 
 Blockly.Extensions.registerMixin(selectableMixin, {
 
+  timer_: null,
+
   onSelect_() {
-    this.setState_({ isSelected: true })
+    clearTimeout(this.timer_);
+    this.setState_({ isSelected: true });
   },
 
   onUnselect_() {
-    this.setState_({ isSelected: false })
+    clearTimeout(this.timer_);
+
+     // 150 的 timeout 是等待 drag 事件的触发（即便在选中另一个 block 后立即尝试拖动，select 事件跟 drag 事件间也大概有 100ms 间隔）
+    this.timer = setTimeout(() => {
+      const unselect = () => {
+        console.log('isSelected: false');
+        this.setState_({ isSelected: false });
+      }
+      console.log('isDragging:', dragBus.isDragging())
+      if (dragBus.isDragging()) {
+        console.log('dragging, wait...');
+        dragBus.onceEnd(() => {
+          console.log('drag end');
+
+          // 50 的 timeout 是等待 connect 动作完成，否则立刻 unselect 会导致 connect 失败（input 不存在）
+          setTimeout(() => {
+            unselect();
+          }, 50);
+        });
+      } else {
+        unselect();
+      }
+    }, 150);
   },
 
 });

@@ -5,8 +5,12 @@ import * as Reconciler from 'react-reconciler';
 const rootHostContext = {};
 const childHostContext = {};
 
+function debug(...args) {
+  if (false) console.debug(...args);
+}
+
 function createInstance(type, props, rootContainer) {
-  // console.debug('createInstance', type, props.name, props)
+  debug('createInstance', type, props.name, props)
   switch (type) {
     case 'dummy-input': {
       const { name, visible } = props
@@ -82,7 +86,7 @@ function insertField(input, index, field) {
 }
 
 function appendChild(parentInstance, child) {
-  // console.debug('appendChild', parentInstance.constructor.name, child.constructor.name, child.name)
+  debug('appendChild', parentInstance.constructor.name, child.constructor.name, child.name)
   if (parentInstance instanceof Blockly.Block && child instanceof Blockly.Input) {
     parentInstance.appendInput(child)
     return
@@ -97,7 +101,7 @@ function appendChild(parentInstance, child) {
 }
 
 function insertBefore(parentInstance, child, beforeChild) {
-  // console.debug('insertBefore', parentInstance.constructor.name, child.constructor.name, child.name, beforeChild.constructor.name, beforeChild.name)
+  debug('insertBefore', parentInstance.constructor.name, child.constructor.name, child.name, beforeChild.constructor.name, beforeChild.name)
   if (
     parentInstance instanceof Blockly.Block
     && child instanceof Blockly.Input
@@ -122,7 +126,7 @@ function insertBefore(parentInstance, child, beforeChild) {
 }
 
 function removeChild(parentInstance, child) {
-  // console.debug('removeChild', parentInstance.constructor.name, child.constructor.name, child.name)
+  debug('removeChild', parentInstance.constructor.name, child.constructor.name, child.name)
   if (parentInstance instanceof Blockly.Block && child instanceof Blockly.Input) {
     parentInstance.removeInput(child.name)
     return
@@ -144,7 +148,7 @@ function updateField(instance, key, value, props) {
 }
 
 function commitUpdate(instance, updatePayload, type, prevProps, nextProps, internalHandle) {
-  // console.debug('commitUpdate', type, instance.name, updatePayload)
+  debug('commitUpdate', type, instance.name, updatePayload)
   for (const change of updatePayload) {
     const { key, value } = change
     if (instance instanceof Blockly.Input) {
