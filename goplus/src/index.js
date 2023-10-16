@@ -69,7 +69,5 @@ ws.addChangeListener((e) => {
 });
 
 initBlockSelect(ws);
-initBlockInputConnect(ws);
-initBlockFieldChange(ws);
 initBlockChange(ws);
 initShadowBlockConverter(ws);

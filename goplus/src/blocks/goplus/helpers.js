@@ -117,3 +117,11 @@ Blockly.Extensions.registerMixin(emptyMixin, {
   }
 
 });
+
+/**
+ * Unique ID
+ * TODO: length 较大时会不满足
+ */
+export function uid(length = 8) {
+  return (Date.now() + '').slice(2, 2+length)
+}

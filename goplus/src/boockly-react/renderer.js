@@ -6,59 +6,64 @@ const rootHostContext = {};
 const childHostContext = {};
 
 function debug(...args) {
-  if (false) console.debug(...args);
+  if (true) console.debug(...args);
+}
+
+// unique name
+function un(prefix = 'Untitled-') {
+  return prefix + (Math.random() + '').slice(2, 12)
 }
 
 function createInstance(type, props, rootContainer) {
   debug('createInstance', type, props.name, props)
   switch (type) {
     case 'dummy-input': {
-      const { name, visible } = props
+      const { name = un(), visible } = props
       const instance = new Blockly.inputs.DummyInput(name, rootContainer);
       if (visible != null) instance.setVisible(visible)
       return instance
     }
     case 'end-row-input': {
-      const { name, visible } = props
+      const { name = un(), visible } = props
       const instance = new Blockly.inputs.EndRowInput(name, rootContainer);
       if (visible != null) instance.setVisible(visible)
       return instance
     }
     case 'statement-input': {
-      const { name, visible } = props
+      const { name = un(), visible } = props
       const instance = new Blockly.inputs.StatementInput(name, rootContainer);
       if (visible != null) instance.setVisible(visible)
       return instance
     }
     case 'value-input': {
-      const { name, visible } = props
+      const { name = un(), visible } = props
       const instance = new Blockly.inputs.ValueInput(name, rootContainer);
       if (visible != null) instance.setVisible(visible)
       return instance
     }
     case 'label-field': {
-      const { name, value, cssClass, visible, ...config } = props
+      const { name = un(), value, cssClass, visible, ...config } = props
       const instance = new Blockly.FieldLabel(value, cssClass, config);
       if (visible != null) instance.setVisible(visible)
       if (name != null) instance.name = name
       return instance
     }
     case 'input-field': {
-      const { name, value, validator, visible, ...config } = props
+      const { name = un(), value, validator, visible, ...config } = props
       const instance = new Blockly.FieldTextInput(value, validator, config);
       if (visible != null) instance.setVisible(visible)
       if (name != null) instance.name = name
       return instance
     }
     case 'number-field': {
-      const { name, value, min, max, precision, validator, visible, ...config } = props
+      const { name = un(), value, min, max, precision, validator, visible, ...config } = props
       const instance = new Blockly.FieldNumber(value, min, max, precision, validator, config);
       if (visible != null) instance.setVisible(visible)
       if (name != null) instance.name = name
       return instance
     }
     case 'variable-field': {
-      const { name, varName, validator, variableTypes, defaultType, visible, ...config } = props
+      const { name = un(), varName, validator, variableTypes, defaultType, visible, ...config } = props
       const instance = new Blockly.FieldVariable(varName, validator, variableTypes, defaultType, config);
       if (visible != null) instance.setVisible(visible)
       if (name != null) instance.name = name
