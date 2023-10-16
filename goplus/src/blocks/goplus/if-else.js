@@ -1,7 +1,7 @@
 // @ts-nocheck
 import * as React from 'react';
 import * as Blockly from 'blockly';
-import { withStateMutator, selectableMixin, emptyMixin } from './helpers';
+import { withStateMutator, selectableMixin, emptyMixin, uid } from './helpers';
 import renderer from '../../boockly-react/renderer';
 
 export default {
@@ -23,36 +23,49 @@ export default {
     Blockly.Extensions.apply(selectableMixin, this, false);
     Blockly.Extensions.apply(emptyMixin, this, false);
 
+    this.state_.shadowElseId = uid();
     this.render_();
 
     window.b = this
   },
 
-  getElseIfCount_() {
-    let count = 0;
-    for (let i = 1; ; i++) {
-      if (
-        this.isValueInputEmpty(`ELSE_IF_COND_${i}`)
-        && this.isStatementInputEmpty(`ELSE_IF_BODY_${i}`)
-      ) {
-        console.debug(`else..if ${i} empty`)
-        break
-      } else {
-        console.debug(
-          `else..if ${i} not empty`,
-          this.isValueInputEmpty(`ELSE_IF_COND_${i}`),
-          this.isStatementInputEmpty(`ELSE_IF_BODY_${i}`)
-        )
-        count = i
-      }
-    }
-    return count
+  checkElsePart_(id) {
+    const condEmpty = this.isValueInputEmpty(`ELSE_COND_${id}`);
+    const bodyEmpty = this.isStatementInputEmpty(`ELSE_BODY_${id}`);
+    const empty = condEmpty && bodyEmpty
+    return { empty, condEmpty, bodyEmpty }
   },
 
   onChange_() {
+    const { elseParts = [], shadowElseId } = this.state_;
+    const newElseParts = [];
+
+    // filter original else parts
+    for (const part of elseParts) {
+      const id = part.id;
+      const { empty, condEmpty, bodyEmpty } = this.checkElsePart_(id);
+      if (empty) {
+        console.debug(`else ${id} empty`);
+        continue;
+      }
+      console.debug(`else ${id} not empty`, condEmpty, bodyEmpty);
+      newElseParts.push({ id, condEmpty });
+    }
+
+    // check is new shadow else should be created
+    let newShadowElseId = shadowElseId;
+    const shadowElseChecked = this.checkElsePart_(shadowElseId);
+    if (shadowElseChecked.empty) {
+      console.debug(`shadow else ${newShadowElseId} empty`);
+    } else {
+      console.debug(`shadow else ${newShadowElseId} not empty`, shadowElseChecked.condEmpty, shadowElseChecked.bodyEmpty);
+      newElseParts.push({ id: shadowElseId, condEmpty: shadowElseChecked.condEmpty });
+      newShadowElseId = uid();
+    }
+
     this.setState_({
-      elseIfCount: this.getElseIfCount_(),
-      hasElse: !this.isStatementInputEmpty('ELSE_BODY'),
+      elseParts: newElseParts,
+      shadowElseId: newShadowElseId,
     });
   },
 
@@ -62,42 +75,43 @@ export default {
     // if %1 %2 else if %3 %4 else %5
 
     const isSelected = this.state_.isSelected ?? false;
-    const elseIfCount = this.state_.elseIfCount ?? 0;
-    const hasElse = this.state_.hasElse ?? false;
+    const elseParts = this.state_.elseParts ?? [];
+    const shadowElseId = this.state_.shadowElseId;
 
-    // console.log(this.id, isSelected, elseIfCount, hasElse)
-
-    const elseIfParts = Array.from({ length: elseIfCount }).map((_, i) => (
-      <React.Fragment key={i}>
-        <value-input key={`ELSE_IF_COND_${i+1}`} name={`ELSE_IF_COND_${i+1}`}>
-          <label-field value="else if" />
-        </value-input>
-        <statement-input key={`ELSE_IF_BODY_${i+1}`} name={`ELSE_IF_BODY_${i+1}`}>
-          <label-field value="do" />
-        </statement-input>
-      </React.Fragment>
-    ))
-
-    if (isSelected) {
-      elseIfParts.push(
-        <React.Fragment key={elseIfCount}>
-          <value-input key={`ELSE_IF_COND_${elseIfCount+1}`} name={`ELSE_IF_COND_${elseIfCount+1}`}>
-            <label-field value="(else if)" />
+    const elsePartsView = elseParts.map(part => {
+      const { id, condEmpty } = part
+      const condVisible = isSelected || !condEmpty;
+      return (
+        <React.Fragment key={id}>
+          <dummy-input>
+            <label-field value="else" />
+          </dummy-input>
+          <value-input name={`ELSE_COND_${id}`} visible={condVisible}>
+            <label-field value="if" />
           </value-input>
-          <statement-input key={`ELSE_IF_BODY_${elseIfCount+1}`} name={`ELSE_IF_BODY_${elseIfCount+1}`}>
-            <label-field value="(do)" />
+          <statement-input name={`ELSE_BODY_${id}`}>
+            <label-field value="do" />
+          </statement-input>
+        </React.Fragment>
+      )
+    });
+
+    if (shadowElseId != null) {
+      const id = shadowElseId
+      elsePartsView.push(
+        <React.Fragment key={id}>
+          <dummy-input visible={isSelected}>
+            <label-field value="else" />
+          </dummy-input>
+          <value-input name={`ELSE_COND_${id}`} visible={isSelected}>
+            <label-field value="if" />
+          </value-input>
+          <statement-input name={`ELSE_BODY_${id}`} visible={isSelected}>
+            <label-field value="do" />
           </statement-input>
         </React.Fragment>
       )
     }
-
-    const elsePart = (hasElse || isSelected) && (
-      <>
-        <statement-input name="ELSE_BODY">
-          <label-field value={hasElse ? 'else' : '(else)'} />
-        </statement-input>
-      </>
-    )
 
     renderer.render(
       <>
@@ -107,8 +121,7 @@ export default {
         <statement-input name="BODY">
           <label-field value="do" />
         </statement-input>
-        {elseIfParts}
-        {elsePart}
+        {elsePartsView}
       </>,
       this,
       () => this.queueRender()
