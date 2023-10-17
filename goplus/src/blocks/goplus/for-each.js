@@ -60,8 +60,6 @@ export default {
     this.setInputsInline(true);
     this.render_();
     Blockly.Extensions.apply('goplus-for-each-mutator', this, true);
-
-    window.b = this
   },
 
   renderKeyVaue_() {

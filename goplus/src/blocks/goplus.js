@@ -1,15 +1,75 @@
 import * as Blockly from 'blockly';
 
-import forRange from './goplus/for-range';
-import forEach from './goplus/for-each';
+import { createBlockDefinitionsFromJsonArrayWithGroup } from './goplus/with-group';
 
 // https://blocklycodelabs.dev/codelabs/custom-generator/index.html#0
 //
 
-export const blocksFromJS = {
-  'goplus_for_range': forRange,
-  'goplus_for_each_2': forEach
-}
+export const blocksWithGroupFromJSON = createBlockDefinitionsFromJsonArrayWithGroup([
+  {
+    "type": "goplus_for_each_with_group",
+    "tooltip": "goplus for each (with group)",
+    "inputsInline": true,
+    "previousStatement": null,
+    "nextStatement": null,
+    "style": "loop_blocks",
+    "message0": "for [%1,] %2 <- %3 [if %4] %5",
+    "args0": [
+      {
+        "type": "field_input",
+        "name": "KEY",
+        "text": ""
+      },
+      {
+        "type": "field_input",
+        "name": "VAL",
+        "text": "v"
+      },
+      {
+        "type": "input_value",
+        "name": "LIST",
+        "align": "LEFT"
+      },
+      {
+        "type": "input_value",
+        "name": "COND",
+        "check": "Boolean",
+        "align": "RIGHT"
+      },
+      {
+        "type": "input_statement",
+        "name": "BODY"
+      }
+    ],
+  },
+  {
+    "type": "goplus_if_else_with_group",
+    "tooltip": "goplus if else (with group)",
+    "inputsInline": true,
+    "previousStatement": null,
+    "nextStatement": null,
+    "style":"logic_blocks",
+    "message0": "if %1 %2 [else [if %3] %4]*",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "COND"
+      },
+      {
+        "type": "input_statement",
+        "name": "BODY"
+      },
+      {
+        "type": "input_value",
+        "name": "ELSE_COND"
+      },
+      {
+        "type": "input_statement",
+        "name": "ELSE_BODY"
+      }
+    ],
+  },
+])
 
 export const blocksFromJSON = Blockly.common.createBlockDefinitionsFromJsonArray([{
   "type": "goplus_if",
