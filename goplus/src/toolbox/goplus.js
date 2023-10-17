@@ -22,6 +22,10 @@ export const toolbox = {
         },
         {
           'kind': 'block',
+          'type': 'goplus_if_else_with_group'
+        },
+        {
+          'kind': 'block',
           'type': 'goplus_if_else',
         },
         {
@@ -106,18 +110,8 @@ export const toolbox = {
           },
         },
         {
-          'kind': 'block',
-          'type': 'goplus_for_each_react',
-          // 'inputs': {
-          //   'COND': {
-          //     'shadow': {
-          //       'type': 'logic_boolean',
-          //       'fields': {
-          //         'BOOL': true,
-          //       },
-          //     },
-          //   }
-          // },
+          kind: 'block',
+          type: 'goplus_for_each_with_group',
         },
         {
           'kind': 'block',

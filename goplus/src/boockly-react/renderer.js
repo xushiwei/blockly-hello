@@ -6,7 +6,7 @@ const rootHostContext = {};
 const childHostContext = {};
 
 function debug(...args) {
-  if (true) console.debug(...args);
+  if (false) console.debug(...args);
 }
 
 // unique name
@@ -14,9 +14,31 @@ function un(prefix = 'Untitled-') {
   return prefix + (Math.random() + '').slice(2, 12)
 }
 
+const typesMap = {
+  input_value: 'value-input',
+  input_statement: 'statement-input',
+  input_dummy: 'dummy-input',
+  input_end_row: 'end-row-input',
+  field_input: 'input-field',
+  field_dropdown: 'dropdown-field',
+  field_checkbox: 'checkbox-field',
+  field_colour: 'colour-field',
+  field_number: 'number-field',
+  field_angle: 'angle-field',
+  field_variable: 'variable-field',
+  field_label: 'label-field',
+  field_image: 'image-field',
+}
+
 function createInstance(type, props, rootContainer) {
   debug('createInstance', type, props.name, props)
   switch (type) {
+    case 'input':
+    case 'field': {
+      const { type, ...rest } = props
+      const elementType = typesMap[props.type]
+      return createInstance(elementType, rest, rootContainer)
+    }
     case 'dummy-input': {
       const { name = un(), visible } = props
       const instance = new Blockly.inputs.DummyInput(name, rootContainer);
@@ -42,29 +64,29 @@ function createInstance(type, props, rootContainer) {
       return instance
     }
     case 'label-field': {
-      const { name = un(), value, cssClass, visible, ...config } = props
-      const instance = new Blockly.FieldLabel(value, cssClass, config);
+      const { name = un(), visible, ...config } = props
+      const instance = Blockly.FieldLabel.fromJson(config);
       if (visible != null) instance.setVisible(visible)
       if (name != null) instance.name = name
       return instance
     }
     case 'input-field': {
-      const { name = un(), value, validator, visible, ...config } = props
-      const instance = new Blockly.FieldTextInput(value, validator, config);
+      const { name = un(), visible, ...config } = props
+      const instance = Blockly.FieldTextInput.fromJson(config);
       if (visible != null) instance.setVisible(visible)
       if (name != null) instance.name = name
       return instance
     }
     case 'number-field': {
-      const { name = un(), value, min, max, precision, validator, visible, ...config } = props
-      const instance = new Blockly.FieldNumber(value, min, max, precision, validator, config);
+      const { name = un(), visible, ...config } = props
+      const instance = Blockly.FieldNumber.fromJson(config);
       if (visible != null) instance.setVisible(visible)
       if (name != null) instance.name = name
       return instance
     }
     case 'variable-field': {
-      const { name = un(), varName, validator, variableTypes, defaultType, visible, ...config } = props
-      const instance = new Blockly.FieldVariable(varName, validator, variableTypes, defaultType, config);
+      const { name = un(), visible, ...config } = props
+      const instance = Blockly.FieldVariable.fromJson(config);
       if (visible != null) instance.setVisible(visible)
       if (name != null) instance.name = name
       return instance
@@ -106,7 +128,7 @@ function appendChild(parentInstance, child) {
 }
 
 function insertBefore(parentInstance, child, beforeChild) {
-  debug('insertBefore', parentInstance.constructor.name, child.constructor.name, child.name, beforeChild.constructor.name, beforeChild.name)
+  debug('insertBefore', child.value_, beforeChild.value_)
   if (
     parentInstance instanceof Blockly.Block
     && child instanceof Blockly.Input
@@ -124,7 +146,7 @@ function insertBefore(parentInstance, child, beforeChild) {
     const idx = parentInstance.fieldRow.indexOf(beforeChild)
     // parentInstance.insertFieldAt(idx, child, child.name)
     // parentInstance.fieldRow.splice(idx, 0, child)
-    insertField(parentInstance, 0, child)
+    insertField(parentInstance, idx, child)
     return
   }
   throw new Error('Failed to insertBefore')

@@ -23,10 +23,34 @@ export default {
     Blockly.Extensions.apply(selectableMixin, this, false);
     Blockly.Extensions.apply(emptyMixin, this, false);
 
+    // this.initMessage_({
+    //   "message0": "if %1 { %2 } [else [if %3] { %4 }]*",
+    //   "args0": [
+    //     {
+    //       "type": "field_input",
+    //       "name": "COND",
+    //       "text": "k"
+    //     },
+    //     {
+    //       "type": "input_statement",
+    //       "name": "BODY"
+    //     },
+    //     {
+    //       "type": "field_input",
+    //       "name": "ELSE_COND",
+    //       "text": "k"
+    //     },
+    //     {
+    //       "type": "input_statement",
+    //       "name": "ELSE_BODY"
+    //     }
+    //   ],
+    // });
+
     this.state_.shadowElseId = uid();
     this.render_();
 
-    window.b = this
+    window.b = this; // TODO: remove me
   },
 
   checkElsePart_(id) {
@@ -89,6 +113,9 @@ export default {
           <value-input name={`ELSE_COND_${id}`} visible={condVisible}>
             <label-field value="if" />
           </value-input>
+          <dummy-input visible={!condVisible}>
+            <label-field value="..." />
+          </dummy-input>
           <statement-input name={`ELSE_BODY_${id}`}>
             <label-field value="do" />
           </statement-input>
@@ -122,6 +149,9 @@ export default {
           <label-field value="do" />
         </statement-input>
         {elsePartsView}
+        <dummy-input visible={!isSelected}>
+          <label-field value="..." />
+        </dummy-input>
       </>,
       this,
       () => this.queueRender()

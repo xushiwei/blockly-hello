@@ -17,7 +17,7 @@ export default {
       previousStatement: null,
       nextStatement: null,
       style: 'loop_blocks',
-    })
+    });
 
     Blockly.Extensions.apply(withStateMutator, this, true);
     Blockly.Extensions.apply(selectableMixin, this, false);
@@ -70,5 +70,4 @@ export default {
     );
   },
 
-  
 };

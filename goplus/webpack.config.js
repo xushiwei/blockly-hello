@@ -14,6 +14,9 @@ const config = {
   devServer: {
     static: './build',
   },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js', '.jsx'],
+  },
   module: {
     rules: [
       {
@@ -25,6 +28,18 @@ const config = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: ['babel-loader'],
+      },
+      {
+        test: /\.(ts|tsx)$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true
+            }
+          }
+        ],
       },
     ],
   },

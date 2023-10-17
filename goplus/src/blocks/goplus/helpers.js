@@ -70,15 +70,10 @@ Blockly.Extensions.registerMixin(selectableMixin, {
      // 150 的 timeout 是等待 drag 事件的触发（即便在选中另一个 block 后立即尝试拖动，select 事件跟 drag 事件间也大概有 100ms 间隔）
     this.timer = setTimeout(() => {
       const unselect = () => {
-        console.log('isSelected: false');
         this.setState_({ isSelected: false });
       }
-      console.log('isDragging:', dragBus.isDragging())
       if (dragBus.isDragging()) {
-        console.log('dragging, wait...');
         dragBus.onceEnd(() => {
-          console.log('drag end');
-
           // 50 的 timeout 是等待 connect 动作完成，否则立刻 unselect 会导致 connect 失败（input 不存在）
           setTimeout(() => {
             unselect();
@@ -97,6 +92,17 @@ Blockly.Extensions.registerMixin(selectableMixin, {
  */
 export const emptyMixin = 'empty-mixin'
 
+function isFieldEmpty(field) {
+  if (field instanceof Blockly.FieldTextInput) {
+    const value = field.getValue()
+    return value == null || value === ''
+  }
+  if (field instanceof Blockly.FieldVariable) {
+    throw new Error('TODO')
+  }
+  return true
+}
+
 Blockly.Extensions.registerMixin(emptyMixin, {
 
   isInputFieldEmpty(fieldName) {
@@ -114,6 +120,25 @@ Blockly.Extensions.registerMixin(emptyMixin, {
     const input = this.getInput(inputName);
     const targetBlock = input?.connection?.targetBlock();
     return targetBlock == null || targetBlock.isShadow();
+  },
+
+  isFieldEmpty_(fieldName) {
+    const field = this.getField(fieldName)
+    if (field == null) return true
+    return isFieldEmpty(field)
+  },
+
+  isInputEmpty_(inputName) {
+    const input = this.getInput(inputName)
+    if (input == null) return true
+    if (input instanceof Blockly.inputs.ValueInput || input instanceof Blockly.inputs.StatementInput) {
+      const targetBlock = input.connection?.targetBlock();
+      if (targetBlock != null && !targetBlock.isShadow()) return false;
+    }
+    for (const field of input.fieldRow) {
+      if (!isFieldEmpty(field)) return false;
+    }
+    return true
   }
 
 });
@@ -123,5 +148,6 @@ Blockly.Extensions.registerMixin(emptyMixin, {
  * TODO: length 较大时会不满足
  */
 export function uid(length = 8) {
-  return (Date.now() + '').slice(2, 2+length)
+  const id = (Math.random() + '').slice(2, 2+length)
+  return id
 }

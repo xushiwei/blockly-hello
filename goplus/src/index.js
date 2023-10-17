@@ -7,7 +7,7 @@
 import * as Blockly from 'blockly';
 // https://google.github.io/blockly-samples/plugins/theme-deuteranopia/test/index
 import Theme from '@blockly/theme-deuteranopia';
-import {blocksFromJSON, blocksFromJS} from './blocks/goplus';
+import {blocksFromJSON, blocksWithGroupFromJSON, blocksFromJS} from './blocks/goplus';
 import {forBlock} from './generators/javascript';
 import {javascriptGenerator} from 'blockly/javascript';
 import {save, load} from './serialization';
@@ -18,6 +18,7 @@ import { initShadowBlockConverter } from './plugins/shadow-block-converter';
 
 // Register the blocks and generator with Blockly
 Blockly.common.defineBlocks(blocksFromJSON);
+Blockly.common.defineBlocks(blocksWithGroupFromJSON);
 Blockly.common.defineBlocks(blocksFromJS);
 Object.assign(javascriptGenerator.forBlock, forBlock);
 

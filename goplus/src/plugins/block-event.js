@@ -118,7 +118,12 @@ export function initBlockChange(ws) {
     // field change
     if (e.type === Blockly.Events.CHANGE && e.element === 'field') {
       const block = e.blockId && workspace.getBlockById(e.blockId);
-      if (block != null && (typeof block.onChange_ === 'function')) block.onChange_('field-change');
+      if (block != null && (typeof block.onChange_ === 'function')) {
+        // 10 的 timeout 是等待 change 操作完成
+        setTimeout(() => {
+          block.onChange_('field-change');
+        }, 10);
+      }
     }
 
   });
