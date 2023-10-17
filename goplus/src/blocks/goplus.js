@@ -1,22 +1,9 @@
 import * as Blockly from 'blockly';
 
-import forRange from './goplus/for-range';
-import forEach from './goplus/for-each';
-import forEachReact from './goplus/for-each-react';
-import ifElse from './goplus/if-else-react';
 import { createBlockDefinitionsFromJsonArrayWithGroup } from './goplus/with-group';
-// import forEachJson from './goplus/for-each-json';
 
 // https://blocklycodelabs.dev/codelabs/custom-generator/index.html#0
 //
-
-export const blocksFromJS = {
-  'goplus_for_range': forRange,
-  'goplus_for_each_2': forEach,
-  'goplus_for_each_react': forEachReact,
-  // 'goplus_for_each_json': forEachJson,
-  'goplus_if_else': ifElse,
-}
 
 export const blocksWithGroupFromJSON = createBlockDefinitionsFromJsonArrayWithGroup([
   {
