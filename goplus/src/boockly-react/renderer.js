@@ -308,8 +308,12 @@ const myRenderer = Reconciler({
   removeChildFromContainer: removeChild,
   commitUpdate: commitUpdate,
   clearContainer(container) {
-    console.warn('clearContainer not implemented')
-    // throw new Error('clearContainer not implemented')
+    for (const input of container.inputList) {
+      if (input.name) {
+        const removed = container.removeInput(input.name, true)
+        if (!removed) console.warn('remove input failed:', input.name)
+      }
+    }
   },
   supportsHydration: false
 });
