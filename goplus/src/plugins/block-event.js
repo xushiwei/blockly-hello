@@ -80,14 +80,6 @@ export function initBlockSelect(ws) {
 export function initBlockChange(ws) {
   ws.addChangeListener(e => {
 
-    if ( // TODO: remove me
-      // e.type !== 'click'
-      e.type !== 'change'
-      && false
-    ) {
-      console.debug(Date.now() / 1000, e.type, e)
-    }
-
     if (!e.workspaceId) return;
 
     const workspace = Blockly.Workspace.getById(e.workspaceId);

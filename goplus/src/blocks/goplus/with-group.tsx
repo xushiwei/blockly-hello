@@ -7,14 +7,12 @@ import type { BlockDefinition } from 'blockly/core/blocks';
 
 export const withGroupMixin = 'with-group-mixin';
 
-console.log('for [%1,]* %2 <- %3 [if %4] %5', tokenizeInterpolationWithGroups('for [%1,]* %2 <- %3 [if %4] %5'));
-console.log('if %1 %2 [else [if %3] %4]*', tokenizeInterpolationWithGroups('if %1 %2 [else [if %3] %4]*'));
-
 const TYPE_GROUP_START = 'group_start'
 const TYPE_GROUP_END = 'group_end'
 
 Blockly.Extensions.registerMixin(withGroupMixin, {
 
+  /** block 内容的结构，包括 group、input & field */
   root_: { type: 'root', children: [] } satisfies ParsedRoot,
 
   /** 同 interpolateArguments_，但支持 group */
@@ -79,18 +77,23 @@ Blockly.Extensions.registerMixin(withGroupMixin, {
     return elements;
   },
 
-  parseNodes_(
+  /** 基于单条 message（及其对应的 args）解析并组装到 root */
+  parseMessage_(
     this: Blockly.Block,
-    { message0, args0 }: { message0: string, args0: any[] } // TODO: message N
+    message: string,
+    args: any[],
+    implicitAlign: string | undefined
   ) {
-    const tokens = tokenizeInterpolationWithGroups(message0);
+    console.debug('parseMessage_', message, args)
+
+    const root = this.root_
+    const tokens = tokenizeInterpolationWithGroups(message);
     // @ts-ignore
-    this.validateTokens_(tokens, args0.length);
+    this.validateTokens_(tokens, args.length);
     // @ts-ignore
-    const elements: any[] = this.interpolateArgumentsWithGroup_(tokens, args0);
+    const elements: any[] = this.interpolateArgumentsWithGroup_(tokens, args, implicitAlign);
 
     const fieldBuffer: Array<ParsedField> = [];
-    const root: ParsedRoot = { type: 'root', children: [] };
     const stack: Array<ParsedRoot | ParsedGroup> = [root] // 倒序栈，当前 node（root / group） 在第一项
 
     function flushFieldBuffer(): ParsedInput {
@@ -129,8 +132,28 @@ Blockly.Extensions.registerMixin(withGroupMixin, {
         fieldBuffer.push({ type: 'field', options: element, children: [] });
       }
     }
+  },
+
+  /** 基于 message & args 构造 root & state */
+  parseNodes_(
+    this: Blockly.Block,
+    jsonDef: any
+  ) {
+    const root: ParsedRoot = { type: 'root', children: [] };
 
     this.root_ = root;
+
+    // 同 google/blockly/core/block.ts `jsonInit`
+    let i = 0;
+    while (jsonDef['message' + i] !== undefined) {
+      this.parseMessage_(
+        jsonDef['message' + i],
+        jsonDef['args' + i] || [],
+        // Backwards compatibility: lastDummyAlign aliases implicitAlign.
+        jsonDef['implicitAlign' + i] || jsonDef['lastDummyAlign' + i],
+      );
+      i++;
+    }
 
     const rootGroupStates = this.makeInitialGroupStates_(root.children);
 
@@ -139,7 +162,7 @@ Blockly.Extensions.registerMixin(withGroupMixin, {
       groups: rootGroupStates
     }
 
-    console.log(message0, root, rootGroupStates)
+    console.log(jsonDef.message0, root, rootGroupStates)
   },
 
   makeInitialGroupStates_(nodes: ParsedNode[]): GroupStates {
@@ -251,21 +274,17 @@ Blockly.Extensions.registerMixin(withGroupMixin, {
           const [_, isEmpty] = walk(n, { ...ctx, idx })
           return isEmpty
         })
-        console.debug('is input empty', getGroupedName(name, ctx.groups.map(g => g.instanceId)), isOwnEmpty, childrenAllEmpty)
         return [{}, isOwnEmpty && childrenAllEmpty]
       } else if (node.type === 'field') {
         const name = node.options.name
         const isEmpty = this.isFieldEmpty_(getGroupedName(name, ctx.groups.map(g => g.instanceId)))
-        console.debug('is field empty', getGroupedName(name, ctx.groups.map(g => g.instanceId)), isEmpty)
         return [{}, isEmpty]
       } else if (node.type === 'group') {
         const groupId = [...ctx.groups.map(g => [g.idx, g.instanceId].join('/')), ctx.idx].join('/')
-        console.debug('start walk group', groupId)
 
         const groupState: GroupState = this.getGroupState_(node.idx, ctx)
         if (groupState == null) {
           console.warn('Group state not found', node.idx, ctx)
-          console.debug('finish walk group 1', groupId, false)
           return [{}, false]
         }
 
@@ -293,11 +312,8 @@ Blockly.Extensions.registerMixin(withGroupMixin, {
           newGroupState.ids.push(shadowId)
           newGroupState.shadowId = uid()
           newGroupState.nested[newGroupState.shadowId] = this.makeInitialGroupStates_(node.children)
-          console.debug(`shadow ${groupId}/${shadowId} instantiated`, newGroupState)
           allEmpty = false
         }
-        console.debug(`Group state change [${groupId}]`, groupState, newGroupState)
-        console.debug('finish walk group 2', groupId, allEmpty)
         return [{ [ctx.idx]: newGroupState }, allEmpty]
       } else {
         // 不会走到这里
@@ -377,22 +393,30 @@ export type ParsedRoot = {
 
 export type ParsedNode = ParsedField | ParsedInput | ParsedGroup | ParsedRoot
 
+const messageArgsPattern = /^(message|args)\d+$/
+
 /** 与 jsonInitFactory 相似，但支持 group */
 function jsonInitFactoryWithGroup(jsonDef: any) {
   return function (this: Blockly.Block) {
-    // TODO: message N
-    const { message0, args0, ...restDef } = jsonDef
-    this.jsonInit(restDef);
+
+    // 排除 messageN & argsN，避免 jsonInit 的相应逻辑
+    const otherDef: any = {};
+    for (const key in jsonDef) {
+      if (Object.prototype.hasOwnProperty.call(jsonDef, key)) {
+        const value = jsonDef[key];
+        if (!messageArgsPattern.test(key)) {
+          otherDef[key] = value;
+        }
+      }
+    }
+    this.jsonInit(otherDef);
 
     Blockly.Extensions.apply(withStateMutator, this, true);
     Blockly.Extensions.apply(selectableMixin, this, false);
     Blockly.Extensions.apply(emptyMixin, this, false);
     Blockly.Extensions.apply(withGroupMixin, this, false);
 
-    // this.initMessages_({ message0, args0 });
-    this.parseNodes_({ message0, args0 })
-
-    window.b = this // TODO: remove me
+    this.parseNodes_(jsonDef);
   };
 }
 

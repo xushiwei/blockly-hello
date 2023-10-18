@@ -49,8 +49,6 @@ export default {
 
     this.state_.shadowElseId = uid();
     this.render_();
-
-    window.b = this; // TODO: remove me
   },
 
   checkElsePart_(id) {
