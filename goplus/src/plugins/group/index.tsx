@@ -84,8 +84,6 @@ Blockly.Extensions.registerMixin(withGroupMixin, {
     args: any[],
     implicitAlign: string | undefined
   ) {
-    console.debug('parseMessage_', message, args)
-
     const root = this.root_
     const tokens = tokenizeInterpolationWithGroups(message);
     // @ts-ignore
@@ -140,7 +138,6 @@ Blockly.Extensions.registerMixin(withGroupMixin, {
     jsonDef: any
   ) {
     const root: ParsedRoot = { type: 'root', children: [] };
-
     this.root_ = root;
 
     // 同 google/blockly/core/block.ts `jsonInit`
@@ -156,13 +153,7 @@ Blockly.Extensions.registerMixin(withGroupMixin, {
     }
 
     const rootGroupStates = this.makeInitialGroupStates_(root.children);
-
-    this.state_ = {
-      ...this.state_,
-      groups: rootGroupStates
-    }
-
-    console.log(jsonDef.message0, root, rootGroupStates)
+    this.state_ = { ...this.state_, groups: rootGroupStates }
   },
 
   makeInitialGroupStates_(nodes: ParsedNode[]): GroupStates {
