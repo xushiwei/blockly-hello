@@ -101,22 +101,6 @@ Blockly.Extensions.registerMixin(withGroupMixin, {
       }
     }
 
-    const rootGroupStates: GroupStates = {}
-
-    // 这里假设 group 不会出现在 input 中，只会在 input 外，因此 group stack 的 idx 序列可以唯一标识一个 group 定义
-    function getCurrGroupStates(parentIdxes: number[]) {
-      let currGroupStates = rootGroupStates
-      for (const idx of parentIdxes) {
-        const state = currGroupStates[idx]
-        if (state == null) throw new Error(`Invalid idx ${idx} for group states`);
-        if (state.shadowId == null) throw new Error(`Unexpected shadowId: ${state.shadowId}`);
-        const nestedGroupStates = state.nested[state.shadowId];
-        if (nestedGroupStates == null) throw new Error(`No nested group states for shadowId: ${state.shadowId}`);
-        currGroupStates = nestedGroupStates;
-      }
-      return currGroupStates;
-    }
-
     for (let i = 0, element: any; (element = elements[i]); i++) {
       const type = element.type
       if (type === TYPE_GROUP_START) {
@@ -124,9 +108,6 @@ Blockly.Extensions.registerMixin(withGroupMixin, {
           stack[0].children.push(flushFieldBuffer());
         }
         const idx = stack[0].children.length;
-        const currGroupStates = getCurrGroupStates((stack.slice(0, -1) as ParsedGroup[]).map(g => g.idx));
-        const shadowId = uid();
-        currGroupStates[idx] = { ids: [], shadowId, nested: { [shadowId]: {} } };
         const group: ParsedGroup = { type: 'group', idx, tag: '?', children: [] };
         stack[0].children.push(group);
         stack.unshift(group);
@@ -150,6 +131,8 @@ Blockly.Extensions.registerMixin(withGroupMixin, {
     }
 
     this.root_ = root;
+
+    const rootGroupStates = this.makeInitialGroupStates_(root.children);
 
     this.state_ = {
       ...this.state_,
