@@ -98,7 +98,10 @@ function isFieldEmpty(field) {
     return value == null || value === ''
   }
   if (field instanceof Blockly.FieldVariable) {
-    throw new Error('TODO')
+    const varName = field.variable.name
+    // 这里约定名为下划线 `_` 的变量是无意义的输入值
+    // TODO: 自己构造一个特殊的 field_variable，使其有未选中状态（对应于无意义的输入值）
+    return varName === '' || varName === '_'
   }
   return true
 }
