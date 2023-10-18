@@ -1,9 +1,9 @@
 import * as React from 'react';
 import * as Blockly from 'blockly';
+import type { BlockDefinition } from 'blockly/core/blocks';
 import renderer from '../../boockly-react/renderer';
 import { GROUP_END, GROUP_START, tokenizeInterpolationWithGroups } from './parsing';
 import { emptyMixin, selectableMixin, uid, withStateMutator } from './helpers';
-import type { BlockDefinition } from 'blockly/core/blocks';
 
 export const withGroupMixin = 'with-group-mixin';
 

@@ -1,5 +1,6 @@
 import * as Blockly from 'blockly';
 
+/** drag 状态 & 事件总线，用于其他模块消费 drag 状态 */
 export const dragBus = {
 
   draggingId: null,
