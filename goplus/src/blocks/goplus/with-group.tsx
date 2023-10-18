@@ -226,8 +226,9 @@ Blockly.Extensions.registerMixin(withGroupMixin, {
         if (groupState.shadowId != null && instantiatable) {
           groupInstances.push(renderGroupInstance(node, groupState.shadowId, true, ctx))
         }
+        const isInShadow = ctx.groups.some(g => g.isShadow)
         const placeholderView = (
-          <dummy-input visible={instantiatable && !isSelected}>
+          <dummy-input visible={!isInShadow && instantiatable && !isSelected}>
             <label-field text="..." />
           </dummy-input>
         )
