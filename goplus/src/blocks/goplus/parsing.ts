@@ -2,20 +2,8 @@
 
 import * as Blockly from 'blockly'
 
-/**
- * `?`: zero or one
- * `*`: zero or more
- */
-export type GroupTag = '*' | '?'
-
-export type Group = {
-  start: number
-  end: number
-  tag: GroupTag
-}
-
-const GROUP_START = '['
-const GROUP_END = ']'
+export const GROUP_START = '['
+export const GROUP_END = ']'
 
 /**
  * Internal implementation of the message reference and interpolation token
@@ -32,11 +20,8 @@ const GROUP_END = ']'
 function tokenizeInterpolationInternalWithGroups(
   message: string,
   parseInterpolationTokens: boolean,
-  tokenizeNewlines: boolean,
-  groups: Group[]
+  tokenizeNewlines: boolean
 ): (string | number)[] {
-  let groupIdx = 0;
-  let groupStack = [];
   const tokens = [];
   const chars = message.split('');
   chars.push(''); // End marker.
@@ -73,6 +58,12 @@ function tokenizeInterpolationInternalWithGroups(
         || c === GROUP_END
       ) {
         flushBuffer();
+        let t = c;
+        if (c === GROUP_END && chars[i+1] === '*') {
+          t = c + chars[i+1];
+          i++; // skip next char(*)
+        }
+        tokens.push(t);
       } else {
         buffer.push(c); // Regular char.
       }
@@ -131,8 +122,7 @@ function tokenizeInterpolationInternalWithGroups(
                 tokenizeInterpolationInternalWithGroups(
                   rawValue,
                   parseInterpolationTokens,
-                  tokenizeNewlines,
-                  groups,
+                  tokenizeNewlines
                 ),
               );
             } else if (parseInterpolationTokens) {
@@ -157,58 +147,62 @@ function tokenizeInterpolationInternalWithGroups(
       }
     }
 
-    if (c === GROUP_START) {
-      groupStack.push(groupIdx);
-      groups[groupIdx] = {
-        start: tokens.length,
-        end: -1, // 占位
-        tag: '?', // 占位
-      }
-      groupIdx++;
-    }
-    if (c === GROUP_END) {
-      const idx = groupStack.pop();
-      if (idx != null) {
-        const nextChar = chars[i+1];
-        let tag: GroupTag = '?'
-        if (nextChar === '*') {
-          tag = '*';
-          i++; // skip next char(*)
-        }
-        groups[idx] = {
-          ...groups[idx],
-          tag,
-          end: tokens.length
-        };
-      }
-    }
+    // if (c === GROUP_START) {
+    //   groupStack.push(groupIdx);
+    //   groups[groupIdx] = {
+    //     start: tokens.length,
+    //     end: -1, // 占位
+    //     tag: '?', // 占位
+    //   }
+    //   groupIdx++;
+    // }
+    // if (c === GROUP_END) {
+    //   const idx = groupStack.pop();
+    //   if (idx != null) {
+    //     const nextChar = chars[i+1];
+    //     let tag: GroupTag = '?'
+    //     if (nextChar === '*') {
+    //       tag = '*';
+    //       i++; // skip next char(*)
+    //     }
+    //     groups[idx] = {
+    //       ...groups[idx],
+    //       tag,
+    //       end: tokens.length
+    //     };
+    //   }
+    // }
   }
   flushBuffer();
 
   // Merge adjacent text tokens into a single string (but if newlines should be
   // tokenized, don't merge those with adjacent text).
-  // const mergedTokens = [];
-  // buffer.length = 0;
-  // for (let i = 0; i < tokens.length; i++) {
-  //   if (
-  //     typeof tokens[i] === 'string' &&
-  //     !(tokenizeNewlines && tokens[i] === '\n')
-  //   ) {
-  //     buffer.push(tokens[i] as string);
-  //   } else {
-  //     text = buffer.join('');
-  //     if (text) {
-  //       mergedTokens.push(text);
-  //     }
-  //     buffer.length = 0;
-  //     mergedTokens.push(tokens[i]);
-  //   }
-  // }
-  // text = buffer.join('');
-  // if (text) {
-  //   mergedTokens.push(text);
-  // }
-  // buffer.length = 0;
+  const mergedTokens = [];
+  buffer.length = 0;
+  let text = '';
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
+    if (
+      typeof t === 'string' &&
+      !(tokenizeNewlines && t === '\n') &&
+      t !== GROUP_START &&
+      t[0] !== GROUP_END
+    ) {
+      buffer.push(t as string);
+    } else {
+      text = buffer.join('');
+      if (text) {
+        mergedTokens.push(text);
+      }
+      buffer.length = 0;
+      mergedTokens.push(t);
+    }
+  }
+  text = buffer.join('');
+  if (text) {
+    mergedTokens.push(text);
+  }
+  buffer.length = 0;
 
   return tokens;
 }
@@ -225,6 +219,6 @@ function tokenizeInterpolationInternalWithGroups(
  *     interpolation tokens.
  * @returns Array of strings and numbers.
  */
-export function tokenizeInterpolationWithGroups(message: string, groups: Group[]): (string | number)[] {
-  return tokenizeInterpolationInternalWithGroups(message, true, true, groups);
+export function tokenizeInterpolationWithGroups(message: string): (string | number)[] {
+  return tokenizeInterpolationInternalWithGroups(message, true, true);
 }

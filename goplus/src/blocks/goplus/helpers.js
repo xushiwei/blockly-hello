@@ -123,20 +123,19 @@ Blockly.Extensions.registerMixin(emptyMixin, {
   },
 
   isFieldEmpty_(fieldName) {
+    if (fieldName == null) return true
     const field = this.getField(fieldName)
     if (field == null) return true
     return isFieldEmpty(field)
   },
 
   isInputEmpty_(inputName) {
+    if (inputName == null) return true
     const input = this.getInput(inputName)
     if (input == null) return true
     if (input instanceof Blockly.inputs.ValueInput || input instanceof Blockly.inputs.StatementInput) {
       const targetBlock = input.connection?.targetBlock();
       if (targetBlock != null && !targetBlock.isShadow()) return false;
-    }
-    for (const field of input.fieldRow) {
-      if (!isFieldEmpty(field)) return false;
     }
     return true
   }
