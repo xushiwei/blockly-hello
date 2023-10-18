@@ -91,19 +91,19 @@ export function initBlockChange(ws) {
       if (e.reason?.includes('connect')) {
         const parentBlock = workspace.getBlockById(e.newParentId);
         if (parentBlock != null && (typeof parentBlock.onChange_ === 'function')) {
-          // 10 的 timeout 是等待 connect 操作完成（block 数据，如 connection 等，完成更新）
+          // 50 的 timeout 是等待 connect 操作完成（block 数据，如 connection 等，完成更新）
           setTimeout(() => {
             parentBlock.onChange_('connect');
-          }, 10);
+          }, 50);
         }
       }
       if (e.reason?.includes('disconnect')) {
         const parentBlock = workspace.getBlockById(e.oldParentId);
         if (parentBlock != null && (typeof parentBlock.onChange_ === 'function')) {
-          // 10 的 timeout 是等待 disconnect 操作完成（block 数据，如 connection 等，完成更新）
+          // 50 的 timeout 是等待 disconnect 操作完成（block 数据，如 connection 等，完成更新）
           setTimeout(() => {
             parentBlock.onChange_('disconnect');
-          }, 10);
+          }, 50);
         }
       }
     }
@@ -112,10 +112,10 @@ export function initBlockChange(ws) {
     if (e.type === Blockly.Events.CHANGE && e.element === 'field') {
       const block = e.blockId && workspace.getBlockById(e.blockId);
       if (block != null && (typeof block.onChange_ === 'function')) {
-        // 10 的 timeout 是等待 change 操作完成
+        // 50 的 timeout 是等待 change 操作完成
         setTimeout(() => {
           block.onChange_('field-change');
-        }, 10);
+        }, 50);
       }
     }
 
