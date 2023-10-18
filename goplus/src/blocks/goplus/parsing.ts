@@ -146,32 +146,6 @@ function tokenizeInterpolationInternalWithGroups(
         }
       }
     }
-
-    // if (c === GROUP_START) {
-    //   groupStack.push(groupIdx);
-    //   groups[groupIdx] = {
-    //     start: tokens.length,
-    //     end: -1, // 占位
-    //     tag: '?', // 占位
-    //   }
-    //   groupIdx++;
-    // }
-    // if (c === GROUP_END) {
-    //   const idx = groupStack.pop();
-    //   if (idx != null) {
-    //     const nextChar = chars[i+1];
-    //     let tag: GroupTag = '?'
-    //     if (nextChar === '*') {
-    //       tag = '*';
-    //       i++; // skip next char(*)
-    //     }
-    //     groups[idx] = {
-    //       ...groups[idx],
-    //       tag,
-    //       end: tokens.length
-    //     };
-    //   }
-    // }
   }
   flushBuffer();
 
