@@ -1,5 +1,5 @@
 import * as Blockly from 'blockly';
-import { dragBus } from '../../plugins/block-event';
+import { dragBus } from '../block-event';
 
 export const minusImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0Ij48cGF0aCBkPSJNMTggMTFoLTEyYy0xLjEwNCAwLTIgLjg5Ni0yIDJzLjg5NiAyIDIgMmgxMmMxLjEwNCAwIDItLjg5NiAyLTJzLS44OTYtMi0yLTJ6IiBmaWxsPSJ3aGl0ZSIgLz48L3N2Zz4K';
 
@@ -98,7 +98,10 @@ function isFieldEmpty(field) {
     return value == null || value === ''
   }
   if (field instanceof Blockly.FieldVariable) {
-    throw new Error('TODO')
+    const varName = field.variable.name
+    // 这里约定名为下划线 `_` 的变量是无意义的输入值
+    // TODO: 自己构造一个特殊的 field_variable，使其有未选中状态（对应于无意义的输入值）
+    return varName === '' || varName === '_'
   }
   return true
 }
@@ -123,20 +126,19 @@ Blockly.Extensions.registerMixin(emptyMixin, {
   },
 
   isFieldEmpty_(fieldName) {
+    if (fieldName == null) return true
     const field = this.getField(fieldName)
     if (field == null) return true
     return isFieldEmpty(field)
   },
 
   isInputEmpty_(inputName) {
+    if (inputName == null) return true
     const input = this.getInput(inputName)
     if (input == null) return true
     if (input instanceof Blockly.inputs.ValueInput || input instanceof Blockly.inputs.StatementInput) {
       const targetBlock = input.connection?.targetBlock();
       if (targetBlock != null && !targetBlock.isShadow()) return false;
-    }
-    for (const field of input.fieldRow) {
-      if (!isFieldEmpty(field)) return false;
     }
     return true
   }

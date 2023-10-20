@@ -1,6 +1,6 @@
 import * as Blockly from 'blockly';
 
-import { createBlockDefinitionsFromJsonArrayWithGroup } from './goplus/with-group';
+import { createBlockDefinitionsFromJsonArrayWithGroup } from '../plugins/group';
 
 // https://blocklycodelabs.dev/codelabs/custom-generator/index.html#0
 //
