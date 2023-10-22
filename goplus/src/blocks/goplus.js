@@ -49,7 +49,7 @@ export const blocksWithGroupFromJSON = createBlockDefinitionsFromJsonArrayWithGr
     "previousStatement": null,
     "nextStatement": null,
     "style":"logic_blocks",
-    "message0": "if %1 %2 [else [if %3] %4]*",
+    "message0": "if %1 %2 [else [if %3 %4 else]* %5]",
     "args0": [
       {
         "type": "input_value",
@@ -61,7 +61,11 @@ export const blocksWithGroupFromJSON = createBlockDefinitionsFromJsonArrayWithGr
       },
       {
         "type": "input_value",
-        "name": "ELSE_COND"
+        "name": "ELSE_IF_COND"
+      },
+      {
+        "type": "input_statement",
+        "name": "ELSE_IF_BODY"
       },
       {
         "type": "input_statement",
