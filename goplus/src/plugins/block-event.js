@@ -79,6 +79,7 @@ export function initBlockSelect(ws) {
  * @param {Blockly.Workspace} ws Blockly Workspace
  */
 export function initBlockChange(ws) {
+  // TODO: 这里是否可使用 setOnChange 替代？
   ws.addChangeListener(e => {
 
     if (!e.workspaceId) return;

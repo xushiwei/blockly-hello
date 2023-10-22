@@ -144,8 +144,6 @@ function insertBefore(parentInstance, child, beforeChild) {
     && beforeChild instanceof Blockly.Field
   ) {
     const idx = parentInstance.fieldRow.indexOf(beforeChild)
-    // parentInstance.insertFieldAt(idx, child, child.name)
-    // parentInstance.fieldRow.splice(idx, 0, child)
     insertField(parentInstance, idx, child)
     return
   }
@@ -308,8 +306,12 @@ const myRenderer = Reconciler({
   removeChildFromContainer: removeChild,
   commitUpdate: commitUpdate,
   clearContainer(container) {
-    console.warn('clearContainer not implemented')
-    // throw new Error('clearContainer not implemented')
+    for (const input of container.inputList) {
+      if (input.name) {
+        const removed = container.removeInput(input.name, true)
+        if (!removed) console.warn('remove input failed:', input.name)
+      }
+    }
   },
   supportsHydration: false
 });

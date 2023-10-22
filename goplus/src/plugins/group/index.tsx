@@ -348,10 +348,6 @@ export type GroupState = {
   nested: Record<string, GroupStates | undefined>
 }
 
-export type GroupsState = {
-  
-}
-
 export type ParsedField = {
   type: 'field'
   options: Options
@@ -408,6 +404,7 @@ function jsonInitFactoryWithGroup(jsonDef: any) {
     Blockly.Extensions.apply(withGroupMixin, this, false);
 
     this.parseNodes_(jsonDef);
+    this.render_();
   };
 }
 
