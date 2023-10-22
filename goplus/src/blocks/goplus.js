@@ -5,6 +5,24 @@ import { createBlockDefinitionsFromJsonArrayWithGroup } from '../plugins/group';
 // https://blocklycodelabs.dev/codelabs/custom-generator/index.html#0
 //
 
+// 检查 goplus_if_else_with_group 输入是否合法
+Blockly.Extensions.register('if_else_check', function() {
+  this.setOnChange(function() {
+    const elseIfCondInputs = this.inputList.filter(
+      input => input.name.includes('ELSE_IF_COND')
+    ).slice(0, -2); // 排除最后两个（1. shadow 项 2. 末项）
+    // 检查非末项的 else ... if 是否 if cond 为空
+    if (elseIfCondInputs.some(input => {
+      const targetBlock = input.connection?.targetBlock();
+      return targetBlock == null || targetBlock.isShadow();
+    })) {
+      this.setWarningText('else block with no `if` can only be present at last');
+    } else {
+      this.setWarningText(null);
+    }
+  });
+});
+
 export const blocksWithGroupFromJSON = createBlockDefinitionsFromJsonArrayWithGroup([
   {
     "type": "goplus_for_each_with_group",
@@ -49,7 +67,8 @@ export const blocksWithGroupFromJSON = createBlockDefinitionsFromJsonArrayWithGr
     "previousStatement": null,
     "nextStatement": null,
     "style":"logic_blocks",
-    "message0": "if %1 %2 [else [if %3 %4 else]* %5]",
+    "extensions": ["if_else_check"],
+    "message0": "if %1 %2 [else [if %3] %4]*",
     "args0": [
       {
         "type": "input_value",
@@ -62,10 +81,6 @@ export const blocksWithGroupFromJSON = createBlockDefinitionsFromJsonArrayWithGr
       {
         "type": "input_value",
         "name": "ELSE_IF_COND"
-      },
-      {
-        "type": "input_statement",
-        "name": "ELSE_IF_BODY"
       },
       {
         "type": "input_statement",
