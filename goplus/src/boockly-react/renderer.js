@@ -144,8 +144,6 @@ function insertBefore(parentInstance, child, beforeChild) {
     && beforeChild instanceof Blockly.Field
   ) {
     const idx = parentInstance.fieldRow.indexOf(beforeChild)
-    // parentInstance.insertFieldAt(idx, child, child.name)
-    // parentInstance.fieldRow.splice(idx, 0, child)
     insertField(parentInstance, idx, child)
     return
   }
